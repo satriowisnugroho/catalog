@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -19,6 +20,7 @@ import (
 type ProductRepositoryInterface interface {
 	CreateProduct(ctx context.Context, product *entity.Product) error
 	GetProductByID(ctx context.Context, productID int) (*entity.Product, error)
+	GetProducts(ctx context.Context, payload *entity.GetProductPayload) ([]*entity.Product, error)
 	UpdateProduct(ctx context.Context, product *entity.Product) error
 }
 
@@ -39,6 +41,9 @@ var (
 	ProductCreationColumns = ProductColumns[1:]
 	// ProductCreationAttributes hold string format of all creation product columns
 	ProductCreationAttributes = strings.Join(ProductCreationColumns, ", ")
+
+	// eligibleOrderByFields list all eligible order by field
+	eligibleOrderByFields = []string{"created_at"}
 )
 
 // NewProductRepository create initiate product repository with given database
@@ -123,6 +128,44 @@ func (r *ProductRepository) GetProductByID(ctx context.Context, productID int) (
 	return rows[0], nil
 }
 
+// GetProducts query to get all product list
+func (r *ProductRepository) GetProducts(ctx context.Context, payload *entity.GetProductPayload) ([]*entity.Product, error) {
+	functionName := "ProductRepository.GetProducts"
+	if err := helper.CheckDeadline(ctx); err != nil {
+		return []*entity.Product{}, errors.Wrap(err, functionName)
+	}
+
+	if payload.Limit == 0 {
+		payload.Limit = 10
+	} else if payload.Limit > 100 {
+		payload.Limit = 100
+	}
+
+	orderBy := "id DESC"
+	if len(payload.OrderBy) > 0 {
+		parts := strings.Split(payload.OrderBy, " ")
+		orderByField := parts[0]
+		orderByType := parts[1]
+
+		if helper.StringInArray(orderByField, eligibleOrderByFields) {
+			if orderByType != "ASC" {
+				orderByType = "DESC"
+			}
+			orderBy = fmt.Sprintf("%s %s", orderByField, orderByType)
+		}
+	}
+
+	filterQuery, params := r.constructSearchQuery(payload)
+	query := fmt.Sprintf("SELECT %s FROM %s %s ORDER BY %s OFFSET %d LIMIT %d", ProductAttributes, ProductTableName, filterQuery, orderBy, payload.Offset, payload.Limit)
+
+	rows, err := r.fetch(ctx, query, params...)
+	if err != nil {
+		return rows, errors.Wrap(err, functionName)
+	}
+
+	return rows, nil
+}
+
 // UpdateProduct update a product
 func (r *ProductRepository) UpdateProduct(ctx context.Context, product *entity.Product) error {
 	functionName := "ProductRepository.UpdateProduct"
@@ -155,4 +198,43 @@ func (r *ProductRepository) UpdateProduct(ctx context.Context, product *entity.P
 	}
 
 	return nil
+}
+
+// constructSearchQuery construct search query
+func (r *ProductRepository) constructSearchQuery(payload *entity.GetProductPayload) (string, []interface{}) {
+	var params []interface{}
+	filterQuery := ""
+	wheres := []string{}
+	paramIndex := 1
+
+	if len(payload.SKU) > 0 {
+		wheres = append(wheres, fmt.Sprintf("sku = $%v", paramIndex))
+		params = append(params, payload.SKU)
+		paramIndex++
+	}
+
+	// TODO: downcase
+	if len(payload.TitleKeyword) >= 3 {
+		wheres = append(wheres, fmt.Sprintf("title ILIKE $%v", paramIndex))
+		params = append(params, fmt.Sprintf("%%%s%%", payload.TitleKeyword))
+		paramIndex++
+	}
+
+	if len(payload.Category) > 0 {
+		wheres = append(wheres, fmt.Sprintf("category = $%v", paramIndex))
+		params = append(params, payload.Category)
+		paramIndex++
+	}
+
+	if payload.Condition != 0 {
+		wheres = append(wheres, fmt.Sprintf("condition = $%v", paramIndex))
+		params = append(params, strconv.FormatInt(int64(payload.Condition), 10))
+		paramIndex++
+	}
+
+	if len(wheres) > 0 {
+		filterQuery = fmt.Sprintf("WHERE %s", strings.Join(wheres, " AND "))
+	}
+
+	return filterQuery, params
 }

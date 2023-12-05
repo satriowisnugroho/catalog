@@ -20,6 +20,18 @@ type Product struct {
 	UpdatedAt time.Time        `json:"updated_at"`
 }
 
+// GetProductPayload holds get product payload representative
+type GetProductPayload struct {
+	SKU          string
+	TitleKeyword string
+	Category     string
+	Condition    int8
+	Tenant       types.TenantType
+	OrderBy      string
+	Offset       int
+	Limit        int
+}
+
 // ProductPayload holds product payload representative
 type ProductPayload struct {
 	Title     string           `json:"title"`

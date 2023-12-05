@@ -154,6 +154,105 @@ func TestGetProductByID(t *testing.T) {
 	}
 }
 
+func TestGetProducts(t *testing.T) {
+	testcases := []struct {
+		name      string
+		ctx       context.Context
+		payload   *entity.GetProductPayload
+		fetchErr  error
+		fetchRows []string
+		expected  []*entity.Product
+		wantErr   bool
+	}{
+		{
+			name:    "deadline context",
+			ctx:     fixture.CtxEnded(),
+			wantErr: true,
+		},
+		{
+			name:     "fail fetch query error",
+			ctx:      context.Background(),
+			fetchErr: errors.New("fail fetch"),
+			payload:  &entity.GetProductPayload{},
+			wantErr:  true,
+		},
+		{
+			name:      "fail fetch return error rows",
+			ctx:       context.Background(),
+			payload:   &entity.GetProductPayload{},
+			fetchRows: []string{"unknown_column"},
+			wantErr:   true,
+		},
+		{
+			name:      "success when limit greater than 100",
+			ctx:       context.Background(),
+			payload:   &entity.GetProductPayload{Limit: 99999},
+			fetchRows: postgres.ProductColumns,
+			expected:  []*entity.Product{{Tenant: types.TenantLoremType}},
+			wantErr:   false,
+		},
+		{
+			name: "success",
+			ctx:  context.Background(),
+			payload: &entity.GetProductPayload{
+				SKU:          "SKU123",
+				TitleKeyword: "Product",
+				Category:     "foo",
+				Condition:    1,
+				Tenant:       types.TenantLoremType,
+				OrderBy:      "created_at DESC",
+				Offset:       0,
+				Limit:        10,
+			},
+			fetchRows: postgres.ProductColumns,
+			expected:  []*entity.Product{{Tenant: types.TenantLoremType}},
+			wantErr:   false,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer db.Close()
+
+			if tc.fetchErr != nil {
+				mock.ExpectQuery("^SELECT(.+)").WillReturnError(tc.fetchErr)
+			} else {
+				rows := sqlmock.NewRows(tc.fetchRows)
+				if tc.expected != nil {
+					rows = rows.AddRow(
+						tc.expected[0].ID,
+						tc.expected[0].SKU,
+						tc.expected[0].Title,
+						tc.expected[0].Category,
+						tc.expected[0].Condition,
+						tc.expected[0].Tenant,
+						tc.expected[0].Qty,
+						tc.expected[0].Price,
+						tc.expected[0].CreatedAt,
+						tc.expected[0].UpdatedAt,
+					)
+				} else if len(tc.fetchRows) == 1 {
+					rows = rows.AddRow(1)
+				}
+
+				mock.ExpectQuery("^SELECT(.+)").WillReturnRows(rows)
+			}
+
+			dbx := sqlx.NewDb(db, "mock")
+			repo := postgres.NewProductRepository(dbx)
+			result, err := repo.GetProducts(tc.ctx, tc.payload)
+			assert.Equal(t, tc.wantErr, err != nil, err)
+			if !tc.wantErr {
+				assert.EqualValues(t, tc.expected, result)
+			}
+		})
+	}
+}
+
 func TestUpdateProduct(t *testing.T) {
 	testcases := []struct {
 		name      string
