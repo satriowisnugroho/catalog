@@ -253,6 +253,66 @@ func TestGetProducts(t *testing.T) {
 	}
 }
 
+func TestGetProductsCount(t *testing.T) {
+	countColumn := []string{"COUNT(*)"}
+
+	testcases := []struct {
+		name     string
+		ctx      context.Context
+		payload  *entity.GetProductPayload
+		fetchErr error
+		expected int
+		wantErr  bool
+	}{
+		{
+			name:    "deadline context",
+			ctx:     fixture.CtxEnded(),
+			wantErr: true,
+		},
+		{
+			name:     "fail fetch query error",
+			ctx:      context.Background(),
+			payload:  &entity.GetProductPayload{},
+			fetchErr: errors.New("fail fetch"),
+			wantErr:  true,
+		},
+		{
+			name:     "success",
+			ctx:      context.Background(),
+			payload:  &entity.GetProductPayload{},
+			expected: 1,
+			wantErr:  false,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer db.Close()
+
+			if tc.fetchErr != nil {
+				mock.ExpectQuery("^SELECT(.+)").WillReturnError(tc.fetchErr)
+			} else {
+				rows := sqlmock.NewRows(countColumn)
+				rows = rows.AddRow(tc.expected)
+
+				mock.ExpectQuery("^SELECT COUNT\\(\\*\\) (.+)").WillReturnRows(rows)
+			}
+
+			dbx := sqlx.NewDb(db, "mock")
+			repo := postgres.NewProductRepository(dbx)
+			result, err := repo.GetProductsCount(tc.ctx, tc.payload)
+			assert.Equal(t, tc.wantErr, err != nil, err)
+			if !tc.wantErr {
+				assert.EqualValues(t, tc.expected, result)
+			}
+		})
+	}
+}
+
 func TestUpdateProduct(t *testing.T) {
 	testcases := []struct {
 		name      string

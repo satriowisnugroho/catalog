@@ -21,6 +21,7 @@ type ProductRepositoryInterface interface {
 	CreateProduct(ctx context.Context, product *entity.Product) error
 	GetProductByID(ctx context.Context, productID int) (*entity.Product, error)
 	GetProducts(ctx context.Context, payload *entity.GetProductPayload) ([]*entity.Product, error)
+	GetProductsCount(ctx context.Context, payload *entity.GetProductPayload) (int, error)
 	UpdateProduct(ctx context.Context, product *entity.Product) error
 }
 
@@ -128,7 +129,7 @@ func (r *ProductRepository) GetProductByID(ctx context.Context, productID int) (
 	return rows[0], nil
 }
 
-// GetProducts query to get all product list
+// GetProducts query to get product list
 func (r *ProductRepository) GetProducts(ctx context.Context, payload *entity.GetProductPayload) ([]*entity.Product, error) {
 	functionName := "ProductRepository.GetProducts"
 	if err := helper.CheckDeadline(ctx); err != nil {
@@ -164,6 +165,25 @@ func (r *ProductRepository) GetProducts(ctx context.Context, payload *entity.Get
 	}
 
 	return rows, nil
+}
+
+// GetProductsCount query to get count of product list
+func (r *ProductRepository) GetProductsCount(ctx context.Context, payload *entity.GetProductPayload) (int, error) {
+	functionName := "ProductRepository.GetProductsCount"
+	if err := helper.CheckDeadline(ctx); err != nil {
+		return 0, errors.Wrap(err, functionName)
+	}
+
+	filterQuery, params := r.constructSearchQuery(payload)
+	query := fmt.Sprintf("SELECT COUNT(*) FROM %s %s", ProductTableName, filterQuery)
+
+	count := 0
+	rows := r.db.QueryRowxContext(ctx, query, params...)
+	if err := rows.Scan(&count); err != nil {
+		return count, errors.Wrap(err, functionName)
+	}
+
+	return count, nil
 }
 
 // UpdateProduct update a product
