@@ -78,6 +78,7 @@ func (r *ProductRepository) CreateProduct(ctx context.Context, product *entity.P
 	now := time.Now()
 	product.CreatedAt = now
 	product.UpdatedAt = now
+	product.SKU = helper.GenerateSKU()
 
 	query := fmt.Sprintf(`INSERT INTO %s (%s) VALUES (%s) RETURNING id`, ProductTableName, ProductCreationAttributes, EnumeratedBindvars(ProductCreationColumns))
 	log.Print(query)
