@@ -33,6 +33,7 @@ func newProductHandler(
 	{
 		h.POST("/", r.CreateProduct)
 		h.GET("/:id", r.GetProductByID)
+		h.PUT("/:id", r.UpdateProduct)
 	}
 }
 
@@ -45,6 +46,7 @@ func newProductHandler(
 // @Param       request body entity.SwaggerProductPayload true "Product Payload"
 // @Success     200 {object} response.SuccessBody{data=entity.Product,meta=response.MetaInfo}
 // @Failure     404 {object} response.ErrorBody
+// @Failure     422 {object} response.ErrorBody
 // @Failure     500 {object} response.ErrorBody
 // @Router      /products [post]
 func (h *ProductHandler) CreateProduct(c *gin.Context) {
@@ -92,6 +94,49 @@ func (h *ProductHandler) GetProductByID(c *gin.Context) {
 	product, err := h.ProductUsecase.GetProductByID(c.Request.Context(), productID)
 	if err != nil {
 		h.Logger.Error(err, "http - v1 - GetProductByID")
+		response.Error(c, err)
+
+		return
+	}
+
+	response.OK(c, product, "")
+}
+
+// @Summary     Update Product
+// @Description An API to update product
+// @ID          update
+// @Tags  	    product
+// @Param      	id path int true "Product ID"
+// @Accept      json
+// @Produce     json
+// @Param       request body entity.SwaggerProductPayload true "Product Payload"
+// @Success     200 {object} response.SuccessBody{data=entity.Product,meta=response.MetaInfo}
+// @Failure     404 {object} response.ErrorBody
+// @Failure     422 {object} response.ErrorBody
+// @Failure     500 {object} response.ErrorBody
+// @Router      /products/{id} [put]
+func (h *ProductHandler) UpdateProduct(c *gin.Context) {
+	functionName := "ProductHandler.UpdateProduct"
+
+	payload, err := h.ProductParser.ParseProductPayload(c.Request.Body)
+	if err != nil {
+		switch err.(type) {
+		case response.CustomError:
+			response.Error(c, err)
+			return
+		}
+
+		err = errors.Wrap(fmt.Errorf("h.productParser.ParseProductPayload: %w", err), functionName)
+		h.Logger.Error(err)
+		response.Error(c, err)
+		return
+	}
+
+	productID, _ := strconv.Atoi(c.Param("id"))
+	product, err := h.ProductUsecase.UpdateProduct(c.Request.Context(), productID, payload)
+	if err != nil {
+		err = errors.Wrap(fmt.Errorf("h.ProductUsecase.UpdateProduct: %w", err), functionName)
+		h.Logger.Error(err)
 		response.Error(c, err)
 
 		return

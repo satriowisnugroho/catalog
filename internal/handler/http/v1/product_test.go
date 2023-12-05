@@ -16,6 +16,65 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+func TestCreateProduct(t *testing.T) {
+	testcases := []struct {
+		name              string
+		pProductRes       *entity.ProductPayload
+		pProductErr       error
+		uProductRes       *entity.Product
+		uProductErr       error
+		httpStatusCodeRes int
+	}{
+		{
+			name:              "invalid type for tenant",
+			pProductErr:       response.CustomError{HTTPCode: http.StatusUnprocessableEntity},
+			httpStatusCodeRes: http.StatusUnprocessableEntity,
+		},
+		{
+			name:              "failed to parse product payload",
+			pProductErr:       errors.New("error parse product payload"),
+			httpStatusCodeRes: http.StatusInternalServerError,
+		},
+		{
+			name:              "failed to create product",
+			uProductErr:       errors.New("error create product"),
+			httpStatusCodeRes: http.StatusInternalServerError,
+		},
+		{
+			name:              "success",
+			pProductRes:       &entity.ProductPayload{Tenant: types.TenantLoremType},
+			uProductRes:       &entity.Product{Tenant: types.TenantLoremType},
+			httpStatusCodeRes: http.StatusOK,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+
+			ctx.Request = &http.Request{
+				Header: make(http.Header),
+				Method: "POST",
+			}
+
+			l := &testmock.LoggerInterface{}
+			l.On("Error", mock.Anything, mock.Anything)
+
+			pp := &testmock.ProductParserInterface{}
+			pp.On("ParseProductPayload", mock.Anything).Return(tc.pProductRes, tc.pProductErr)
+
+			productUsecase := &testmock.ProductUsecaseInterface{}
+			productUsecase.On("CreateProduct", mock.Anything, mock.Anything).Return(tc.uProductRes, tc.uProductErr)
+
+			h := &httpv1.ProductHandler{l, pp, productUsecase}
+			h.CreateProduct(ctx)
+
+			assert.Equal(t, tc.httpStatusCodeRes, w.Code)
+		})
+	}
+}
+
 func TestGetProductByID(t *testing.T) {
 	testcases := []struct {
 		name              string
@@ -58,6 +117,65 @@ func TestGetProductByID(t *testing.T) {
 
 			h := &httpv1.ProductHandler{l, pp, productUsecase}
 			h.GetProductByID(ctx)
+
+			assert.Equal(t, tc.httpStatusCodeRes, w.Code)
+		})
+	}
+}
+
+func TestUpdateProduct(t *testing.T) {
+	testcases := []struct {
+		name              string
+		pProductRes       *entity.ProductPayload
+		pProductErr       error
+		uProductRes       *entity.Product
+		uProductErr       error
+		httpStatusCodeRes int
+	}{
+		{
+			name:              "invalid type for tenant",
+			pProductErr:       response.CustomError{HTTPCode: http.StatusUnprocessableEntity},
+			httpStatusCodeRes: http.StatusUnprocessableEntity,
+		},
+		{
+			name:              "failed to parse product payload",
+			pProductErr:       errors.New("error parse product payload"),
+			httpStatusCodeRes: http.StatusInternalServerError,
+		},
+		{
+			name:              "failed to update product",
+			uProductErr:       errors.New("error update product"),
+			httpStatusCodeRes: http.StatusInternalServerError,
+		},
+		{
+			name:              "success",
+			pProductRes:       &entity.ProductPayload{Tenant: types.TenantLoremType},
+			uProductRes:       &entity.Product{Tenant: types.TenantLoremType},
+			httpStatusCodeRes: http.StatusOK,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+
+			ctx.Request = &http.Request{
+				Header: make(http.Header),
+				Method: "PUT",
+			}
+
+			l := &testmock.LoggerInterface{}
+			l.On("Error", mock.Anything, mock.Anything)
+
+			pp := &testmock.ProductParserInterface{}
+			pp.On("ParseProductPayload", mock.Anything).Return(tc.pProductRes, tc.pProductErr)
+
+			productUsecase := &testmock.ProductUsecaseInterface{}
+			productUsecase.On("UpdateProduct", mock.Anything, mock.Anything, mock.Anything).Return(tc.uProductRes, tc.uProductErr)
+
+			h := &httpv1.ProductHandler{l, pp, productUsecase}
+			h.UpdateProduct(ctx)
 
 			assert.Equal(t, tc.httpStatusCodeRes, w.Code)
 		})
