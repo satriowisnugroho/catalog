@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/satriowisnugroho/catalog/internal/entity"
+	"github.com/satriowisnugroho/catalog/internal/entity/types"
 	httpv1 "github.com/satriowisnugroho/catalog/internal/handler/http/v1"
 	"github.com/satriowisnugroho/catalog/internal/response"
 	testmock "github.com/satriowisnugroho/catalog/test/mock"
@@ -53,7 +54,7 @@ func TestGetProductByID(t *testing.T) {
 			pp := &testmock.ProductParserInterface{}
 
 			productUsecase := &testmock.ProductUsecaseInterface{}
-			productUsecase.On("GetProductByID", mock.Anything, mock.Anything).Return(&entity.Product{}, tc.uProductErr)
+			productUsecase.On("GetProductByID", mock.Anything, mock.Anything).Return(&entity.Product{Tenant: types.TenantLoremType}, tc.uProductErr)
 
 			h := &httpv1.ProductHandler{l, pp, productUsecase}
 			h.GetProductByID(ctx)

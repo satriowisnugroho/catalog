@@ -8,6 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"github.com/satriowisnugroho/catalog/internal/entity"
+	"github.com/satriowisnugroho/catalog/internal/entity/types"
 	"github.com/satriowisnugroho/catalog/internal/repository/postgres"
 	"github.com/satriowisnugroho/catalog/test/fixture"
 	"github.com/stretchr/testify/assert"
@@ -105,7 +106,7 @@ func TestGetProductByID(t *testing.T) {
 			name:      "success",
 			ctx:       context.Background(),
 			fetchRows: postgres.ProductColumns,
-			expected:  &entity.Product{},
+			expected:  &entity.Product{Tenant: types.TenantLoremType},
 			wantErr:   false,
 		},
 	}
