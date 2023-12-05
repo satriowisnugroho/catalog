@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/satriowisnugroho/catalog/internal/entity"
 	"github.com/satriowisnugroho/catalog/internal/helper"
-	dbEntity "github.com/satriowisnugroho/catalog/internal/repository/postgres/entity"
+	dbentity "github.com/satriowisnugroho/catalog/internal/repository/postgres/entity"
 	"github.com/satriowisnugroho/catalog/internal/response"
 )
 
@@ -48,7 +48,7 @@ func (r *ProductRepository) fetch(ctx context.Context, query string, args ...int
 	result := make([]*entity.Product, 0)
 
 	for rows.Next() {
-		tmpEntity := dbEntity.Product{}
+		tmpEntity := dbentity.Product{}
 		if err := rows.StructScan(&tmpEntity); err != nil {
 			return nil, errors.Wrap(err, "fetch")
 		}

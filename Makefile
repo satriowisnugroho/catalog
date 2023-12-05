@@ -27,3 +27,6 @@ test-cover:
 
 mock-init:
 	mockery --all --dir ./ --output ./test/mock --case underscore
+
+swag-init-v1:
+	swag init --pd -g internal/handler/http/v1/router.go

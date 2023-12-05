@@ -1,0 +1,64 @@
+basePath: /v1
+definitions:
+  response.ErrorBody:
+    properties:
+      errors:
+        items:
+          $ref: '#/definitions/response.ErrorInfo'
+        type: array
+      meta: {}
+    type: object
+  response.ErrorInfo:
+    properties:
+      code:
+        type: integer
+      field:
+        type: string
+      message:
+        type: string
+    type: object
+  response.SuccessBody:
+    properties:
+      data: {}
+      message:
+        type: string
+      meta: {}
+    type: object
+host: localhost:9999
+info:
+  contact: {}
+  description: An API Documentation
+  title: Catalog API
+  version: "1.0"
+paths:
+  /products/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Show product detail
+      operationId: detail
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      summary: Show detail
+      tags:
+      - product
+swagger: "2.0"
