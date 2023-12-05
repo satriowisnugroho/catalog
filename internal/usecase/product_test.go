@@ -14,6 +14,46 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+func TestCreateProduct(t *testing.T) {
+	testcases := []struct {
+		name        string
+		ctx         context.Context
+		data        *entity.Product
+		rProductErr error
+		wantErr     bool
+	}{
+		{
+			name:    "deadline context",
+			ctx:     fixture.CtxEnded(),
+			wantErr: true,
+		},
+		{
+			name:        "failed to create product",
+			ctx:         context.Background(),
+			data:        &entity.Product{},
+			rProductErr: errors.New("error create product"),
+			wantErr:     true,
+		},
+		{
+			name:    "success",
+			ctx:     context.Background(),
+			data:    &entity.Product{Title: "New Product"},
+			wantErr: false,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			productRepo := &testmock.ProductRepositoryInterface{}
+			productRepo.On("CreateProduct", mock.Anything, mock.Anything).Return(tc.rProductErr)
+
+			uc := usecase.NewProductUsecase(productRepo)
+			err := uc.CreateProduct(tc.ctx, tc.data)
+			assert.Equal(t, tc.wantErr, err != nil)
+		})
+	}
+}
+
 func TestGetProductByID(t *testing.T) {
 	testcases := []struct {
 		name        string

@@ -13,6 +13,7 @@ import (
 
 // ProductUsecaseInterface define contract for product related functions to usecase
 type ProductUsecaseInterface interface {
+	CreateProduct(ctx context.Context, product *entity.Product) error
 	GetProductByID(ctx context.Context, productID int64) (*entity.Product, error)
 }
 
@@ -24,6 +25,20 @@ func NewProductUsecase(r repo.ProductRepositoryInterface) *ProductUsecase {
 	return &ProductUsecase{
 		repo: r,
 	}
+}
+
+func (uc *ProductUsecase) CreateProduct(ctx context.Context, product *entity.Product) error {
+	functionName := "ProductUsecase.CreateProduct"
+
+	if err := helper.CheckDeadline(ctx); err != nil {
+		return errors.Wrap(err, functionName)
+	}
+
+	if err := uc.repo.CreateProduct(ctx, product); err != nil {
+		return errors.Wrap(fmt.Errorf("uc.repo.CreateProduct: %w", err), functionName)
+	}
+
+	return nil
 }
 
 func (uc *ProductUsecase) GetProductByID(ctx context.Context, productID int64) (*entity.Product, error) {
