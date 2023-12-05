@@ -18,7 +18,7 @@ func TestCreateProduct(t *testing.T) {
 	testcases := []struct {
 		name        string
 		ctx         context.Context
-		data        *entity.Product
+		data        *entity.ProductPayload
 		rProductErr error
 		wantErr     bool
 	}{
@@ -30,14 +30,14 @@ func TestCreateProduct(t *testing.T) {
 		{
 			name:        "failed to create product",
 			ctx:         context.Background(),
-			data:        &entity.Product{},
+			data:        &entity.ProductPayload{},
 			rProductErr: errors.New("error create product"),
 			wantErr:     true,
 		},
 		{
 			name:    "success",
 			ctx:     context.Background(),
-			data:    &entity.Product{Title: "New Product"},
+			data:    &entity.ProductPayload{Title: "New Product"},
 			wantErr: false,
 		},
 	}
@@ -48,7 +48,7 @@ func TestCreateProduct(t *testing.T) {
 			productRepo.On("CreateProduct", mock.Anything, mock.Anything).Return(tc.rProductErr)
 
 			uc := usecase.NewProductUsecase(productRepo)
-			err := uc.CreateProduct(tc.ctx, tc.data)
+			_, err := uc.CreateProduct(tc.ctx, tc.data)
 			assert.Equal(t, tc.wantErr, err != nil)
 		})
 	}

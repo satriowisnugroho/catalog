@@ -14,18 +14,27 @@ type ProductUsecaseInterface struct {
 	mock.Mock
 }
 
-// CreateProduct provides a mock function with given fields: ctx, product
-func (_m *ProductUsecaseInterface) CreateProduct(ctx context.Context, product *entity.Product) error {
-	ret := _m.Called(ctx, product)
+// CreateProduct provides a mock function with given fields: ctx, productPayload
+func (_m *ProductUsecaseInterface) CreateProduct(ctx context.Context, productPayload *entity.ProductPayload) (*entity.Product, error) {
+	ret := _m.Called(ctx, productPayload)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *entity.Product) error); ok {
-		r0 = rf(ctx, product)
+	var r0 *entity.Product
+	if rf, ok := ret.Get(0).(func(context.Context, *entity.ProductPayload) *entity.Product); ok {
+		r0 = rf(ctx, productPayload)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*entity.Product)
+		}
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, *entity.ProductPayload) error); ok {
+		r1 = rf(ctx, productPayload)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // GetProductByID provides a mock function with given fields: ctx, productID

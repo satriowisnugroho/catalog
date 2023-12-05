@@ -9,6 +9,7 @@ import (
 
 	// Swagger docs.
 	_ "github.com/satriowisnugroho/catalog/docs"
+	"github.com/satriowisnugroho/catalog/internal/parser"
 	"github.com/satriowisnugroho/catalog/internal/usecase"
 	"github.com/satriowisnugroho/catalog/pkg/logger"
 )
@@ -20,7 +21,12 @@ import (
 // @version     1.0
 // @host        localhost:9999
 // @BasePath    /v1
-func NewRouter(handler *gin.Engine, l logger.LoggerInterface, p usecase.ProductUsecaseInterface) {
+func NewRouter(
+	handler *gin.Engine,
+	l logger.LoggerInterface,
+	pp parser.ProductParserInterface,
+	p usecase.ProductUsecaseInterface,
+) {
 	// Options
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
@@ -35,6 +41,6 @@ func NewRouter(handler *gin.Engine, l logger.LoggerInterface, p usecase.ProductU
 	// Routers
 	h := handler.Group("/v1")
 	{
-		newProductHandler(h, l, p)
+		newProductHandler(h, l, pp, p)
 	}
 }

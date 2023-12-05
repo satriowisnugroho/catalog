@@ -23,6 +23,21 @@ definitions:
       updated_at:
         type: string
     type: object
+  entity.ProductPayload:
+    properties:
+      category:
+        type: string
+      condition:
+        type: integer
+      price:
+        type: integer
+      qty:
+        type: integer
+      tenant:
+        type: integer
+      title:
+        type: string
+    type: object
   response.ErrorBody:
     properties:
       errors:
@@ -65,6 +80,13 @@ paths:
       - application/json
       description: An API to create product
       operationId: create
+      parameters:
+      - description: Product Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entity.ProductPayload'
       produces:
       - application/json
       responses:

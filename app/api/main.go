@@ -10,6 +10,7 @@ import (
 
 	"github.com/satriowisnugroho/catalog/internal/config"
 	httpv1 "github.com/satriowisnugroho/catalog/internal/handler/http/v1"
+	"github.com/satriowisnugroho/catalog/internal/parser"
 	"github.com/satriowisnugroho/catalog/internal/repository/postgres"
 	"github.com/satriowisnugroho/catalog/internal/usecase"
 	"github.com/satriowisnugroho/catalog/pkg/httpserver"
@@ -35,9 +36,12 @@ func main() {
 	// Initialize usecases
 	productUsecase := usecase.NewProductUsecase(productRepo)
 
+	// Initialize parsers
+	productParser := parser.NewProductParser()
+
 	// HTTP Server
 	handler := gin.New()
-	httpv1.NewRouter(handler, l, productUsecase)
+	httpv1.NewRouter(handler, l, productParser, productUsecase)
 	httpServer := httpserver.New(handler, httpserver.Port(fmt.Sprint(cfg.Port)))
 
 	// Waiting signal

@@ -20,7 +20,7 @@ type Product struct {
 	UpdatedAt time.Time `db:"updated_at"`
 }
 
-// ToEntity to convert attachment from database to entity contract
+// ToEntity to convert product from database to entity contract
 func (p *Product) ToEntity() *entity.Product {
 	return &entity.Product{
 		ID:        p.ID,

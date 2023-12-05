@@ -30,6 +30,17 @@ const docTemplate_swagger = `{
                 ],
                 "summary": "Create Product",
                 "operationId": "create",
+                "parameters": [
+                    {
+                        "description": "Product Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.ProductPayload"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -160,6 +171,29 @@ const docTemplate_swagger = `{
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.ProductPayload": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "condition": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "qty": {
+                    "type": "integer"
+                },
+                "tenant": {
+                    "type": "integer"
+                },
+                "title": {
                     "type": "string"
                 }
             }

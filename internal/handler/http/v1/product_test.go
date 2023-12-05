@@ -50,10 +50,12 @@ func TestGetProductByID(t *testing.T) {
 			l := &testmock.LoggerInterface{}
 			l.On("Error", mock.Anything, mock.Anything)
 
-			productUsecase := &testmock.ProductRepositoryInterface{}
+			pp := &testmock.ProductParserInterface{}
+
+			productUsecase := &testmock.ProductUsecaseInterface{}
 			productUsecase.On("GetProductByID", mock.Anything, mock.Anything).Return(&entity.Product{}, tc.uProductErr)
 
-			h := &httpv1.ProductHandler{l, productUsecase}
+			h := &httpv1.ProductHandler{l, pp, productUsecase}
 			h.GetProductByID(ctx)
 
 			assert.Equal(t, tc.httpStatusCodeRes, w.Code)
