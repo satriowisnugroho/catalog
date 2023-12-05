@@ -29,11 +29,11 @@ func (_m *ProductRepositoryInterface) CreateProduct(ctx context.Context, product
 }
 
 // GetProductByID provides a mock function with given fields: ctx, productID
-func (_m *ProductRepositoryInterface) GetProductByID(ctx context.Context, productID int64) (*entity.Product, error) {
+func (_m *ProductRepositoryInterface) GetProductByID(ctx context.Context, productID int) (*entity.Product, error) {
 	ret := _m.Called(ctx, productID)
 
 	var r0 *entity.Product
-	if rf, ok := ret.Get(0).(func(context.Context, int64) *entity.Product); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int) *entity.Product); ok {
 		r0 = rf(ctx, productID)
 	} else {
 		if ret.Get(0) != nil {
@@ -42,7 +42,7 @@ func (_m *ProductRepositoryInterface) GetProductByID(ctx context.Context, produc
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
 		r1 = rf(ctx, productID)
 	} else {
 		r1 = ret.Error(1)

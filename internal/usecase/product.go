@@ -14,7 +14,7 @@ import (
 // ProductUsecaseInterface define contract for product related functions to usecase
 type ProductUsecaseInterface interface {
 	CreateProduct(ctx context.Context, productPayload *entity.ProductPayload) (*entity.Product, error)
-	GetProductByID(ctx context.Context, productID int64) (*entity.Product, error)
+	GetProductByID(ctx context.Context, productID int) (*entity.Product, error)
 }
 
 type ProductUsecase struct {
@@ -42,7 +42,7 @@ func (uc *ProductUsecase) CreateProduct(ctx context.Context, productPayload *ent
 	return product, nil
 }
 
-func (uc *ProductUsecase) GetProductByID(ctx context.Context, productID int64) (*entity.Product, error) {
+func (uc *ProductUsecase) GetProductByID(ctx context.Context, productID int) (*entity.Product, error) {
 	functionName := "ProductUsecase.GetProductByID"
 
 	if err := helper.CheckDeadline(ctx); err != nil {

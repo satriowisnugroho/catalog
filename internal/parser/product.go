@@ -6,6 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/satriowisnugroho/catalog/internal/entity"
+	"github.com/satriowisnugroho/catalog/internal/response"
 )
 
 // ProductParserInterface holds interface that parse data for product
@@ -27,6 +28,11 @@ func (p *ProductParser) ParseProductPayload(body io.Reader) (*entity.ProductPayl
 
 	var productPayload entity.ProductPayload
 	if err := json.NewDecoder(body).Decode(&productPayload); err != nil {
+		switch err.(type) {
+		case response.CustomError:
+			return nil, err
+		}
+
 		return nil, errors.Wrap(err, functionName)
 	}
 

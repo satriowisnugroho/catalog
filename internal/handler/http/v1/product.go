@@ -52,6 +52,12 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 
 	payload, err := h.ProductParser.ParseProductPayload(c.Request.Body)
 	if err != nil {
+		switch err.(type) {
+		case response.CustomError:
+			response.Error(c, err)
+			return
+		}
+
 		err = errors.Wrap(fmt.Errorf("h.productParser.ParseProductPayload: %w", err), functionName)
 		h.Logger.Error(err)
 		response.Error(c, err)
@@ -82,7 +88,7 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 // @Failure     500 {object} response.ErrorBody
 // @Router      /products/{id} [get]
 func (h *ProductHandler) GetProductByID(c *gin.Context) {
-	productID, _ := strconv.ParseInt(c.Param("id"), 10, 64)
+	productID, _ := strconv.Atoi(c.Param("id"))
 	product, err := h.ProductUsecase.GetProductByID(c.Request.Context(), productID)
 	if err != nil {
 		h.Logger.Error(err, "http - v1 - GetProductByID")

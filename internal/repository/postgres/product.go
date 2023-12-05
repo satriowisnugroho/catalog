@@ -18,7 +18,7 @@ import (
 // ProductRepositoryInterface define contract for product related functions to repository
 type ProductRepositoryInterface interface {
 	CreateProduct(ctx context.Context, product *entity.Product) error
-	GetProductByID(ctx context.Context, productID int64) (*entity.Product, error)
+	GetProductByID(ctx context.Context, productID int) (*entity.Product, error)
 }
 
 // ProductRepository holds database connection
@@ -102,7 +102,7 @@ func (r *ProductRepository) CreateProduct(ctx context.Context, product *entity.P
 }
 
 // GetProductByID return product by id
-func (r *ProductRepository) GetProductByID(ctx context.Context, productID int64) (*entity.Product, error) {
+func (r *ProductRepository) GetProductByID(ctx context.Context, productID int) (*entity.Product, error) {
 	functionName := "ProductRepository.GetProductByID"
 
 	if err := helper.CheckDeadline(ctx); err != nil {
