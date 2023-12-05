@@ -7,7 +7,7 @@ import (
 	"github.com/satriowisnugroho/catalog/internal/response"
 )
 
-func errInvalidValue(value string, enumType string) response.CustomError {
+func errInvalidValue(enumType string, value string) response.CustomError {
 	return errInvalid("value", enumType, value)
 }
 

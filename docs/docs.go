@@ -37,7 +37,7 @@ const docTemplate_swagger = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entity.ProductPayload"
+                            "$ref": "#/definitions/entity.SwaggerProductPayload"
                         }
                     }
                 ],
@@ -175,7 +175,7 @@ const docTemplate_swagger = `{
                 }
             }
         },
-        "entity.ProductPayload": {
+        "entity.SwaggerProductPayload": {
             "type": "object",
             "properties": {
                 "category": {
@@ -191,7 +191,7 @@ const docTemplate_swagger = `{
                     "type": "integer"
                 },
                 "tenant": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "title": {
                     "type": "string"

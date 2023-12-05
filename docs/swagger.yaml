@@ -23,7 +23,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  entity.ProductPayload:
+  entity.SwaggerProductPayload:
     properties:
       category:
         type: string
@@ -34,7 +34,7 @@ definitions:
       qty:
         type: integer
       tenant:
-        type: integer
+        type: string
       title:
         type: string
     type: object
@@ -86,7 +86,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/entity.ProductPayload'
+          $ref: '#/definitions/entity.SwaggerProductPayload'
       produces:
       - application/json
       responses:

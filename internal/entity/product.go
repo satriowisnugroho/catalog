@@ -30,6 +30,16 @@ type ProductPayload struct {
 	Price     int              `json:"price"`
 }
 
+// SwaggerProductPayload holds product payload for swagger docs
+type SwaggerProductPayload struct {
+	Title     string `json:"title"`
+	Category  string `json:"category"`
+	Condition int8   `json:"condition"`
+	Tenant    string `json:"tenant"`
+	Qty       int    `json:"qty"`
+	Price     int    `json:"price"`
+}
+
 // ToEntity to convert product payload to entity contract
 func (p *ProductPayload) ToEntity() *Product {
 	return &Product{

@@ -55,7 +55,7 @@ func (r *TenantType) UnmarshalJSON(data []byte) error {
 	}
 	v, ok := _TenantTypeNameToValue[s]
 	if !ok {
-		return errInvalidEnum("tenant_type", s)
+		return errInvalidValue("tenant_type", s)
 	}
 	*r = v
 	return nil

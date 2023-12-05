@@ -30,7 +30,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entity.ProductPayload"
+                            "$ref": "#/definitions/entity.SwaggerProductPayload"
                         }
                     }
                 ],
@@ -168,7 +168,7 @@
                 }
             }
         },
-        "entity.ProductPayload": {
+        "entity.SwaggerProductPayload": {
             "type": "object",
             "properties": {
                 "category": {
@@ -184,7 +184,7 @@
                     "type": "integer"
                 },
                 "tenant": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "title": {
                     "type": "string"

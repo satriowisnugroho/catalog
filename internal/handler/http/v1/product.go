@@ -42,7 +42,7 @@ func newProductHandler(
 // @Tags  	    product
 // @Accept      json
 // @Produce     json
-// @Param       request body entity.ProductPayload true "Product Payload"
+// @Param       request body entity.SwaggerProductPayload true "Product Payload"
 // @Success     200 {object} response.SuccessBody{data=entity.Product,meta=response.MetaInfo}
 // @Failure     404 {object} response.ErrorBody
 // @Failure     500 {object} response.ErrorBody
