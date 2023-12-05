@@ -16,9 +16,9 @@ const docTemplate_swagger = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/products/{id}": {
-            "get": {
-                "description": "Show product detail",
+        "/products": {
+            "post": {
+                "description": "An API to create product",
                 "consumes": [
                     "application/json"
                 ],
@@ -28,7 +28,58 @@ const docTemplate_swagger = `{
                 "tags": [
                     "product"
                 ],
-                "summary": "Show detail",
+                "summary": "Create Product",
+                "operationId": "create",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessBody"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/entity.Product"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/response.MetaInfo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/{id}": {
+            "get": {
+                "description": "An API to show product detail",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product"
+                ],
+                "summary": "Show Product Detail",
                 "operationId": "detail",
                 "parameters": [
                     {
