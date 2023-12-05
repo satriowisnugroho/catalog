@@ -19,6 +19,7 @@ import (
 type ProductRepositoryInterface interface {
 	CreateProduct(ctx context.Context, product *entity.Product) error
 	GetProductByID(ctx context.Context, productID int) (*entity.Product, error)
+	UpdateProduct(ctx context.Context, product *entity.Product) error
 }
 
 // ProductRepository holds database connection
@@ -120,4 +121,38 @@ func (r *ProductRepository) GetProductByID(ctx context.Context, productID int) (
 	}
 
 	return rows[0], nil
+}
+
+// UpdateProduct update a product
+func (r *ProductRepository) UpdateProduct(ctx context.Context, product *entity.Product) error {
+	functionName := "ProductRepository.UpdateProduct"
+
+	if err := helper.CheckDeadline(ctx); err != nil {
+		return errors.Wrap(err, functionName)
+	}
+
+	now := time.Now()
+	product.UpdatedAt = now
+
+	query := fmt.Sprintf("UPDATE %s SET %s WHERE id = $%d", ProductTableName, UpdateColumnsValues(ProductCreationColumns), len(ProductColumns))
+
+	_, err := r.db.ExecContext(
+		ctx,
+		query,
+		product.SKU,
+		product.Title,
+		product.Category,
+		product.Condition,
+		product.Tenant,
+		product.Qty,
+		product.Price,
+		product.CreatedAt,
+		product.UpdatedAt,
+		product.ID,
+	)
+	if err != nil {
+		return errors.Wrap(err, functionName)
+	}
+
+	return nil
 }

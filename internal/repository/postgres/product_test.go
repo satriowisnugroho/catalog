@@ -153,3 +153,50 @@ func TestGetProductByID(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdateProduct(t *testing.T) {
+	testcases := []struct {
+		name      string
+		ctx       context.Context
+		updateErr error
+		wantErr   bool
+	}{
+		{
+			name:    "deadline context",
+			ctx:     fixture.CtxEnded(),
+			wantErr: true,
+		},
+		{
+			name:      "fail exec query",
+			ctx:       context.Background(),
+			updateErr: errors.New("fail exec"),
+			wantErr:   true,
+		},
+		{
+			name:    "success",
+			ctx:     context.Background(),
+			wantErr: false,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer db.Close()
+
+			if tc.updateErr != nil {
+				mock.ExpectExec("^UPDATE products(.+)").WillReturnError(tc.updateErr)
+			} else {
+				mock.ExpectExec("^UPDATE products(.+)").WillReturnResult(sqlmock.NewResult(1, 1))
+			}
+
+			dbx := sqlx.NewDb(db, "mock")
+			repo := postgres.NewProductRepository(dbx)
+			err = repo.UpdateProduct(tc.ctx, &entity.Product{})
+			assert.Equal(t, tc.wantErr, err != nil, err)
+		})
+	}
+}

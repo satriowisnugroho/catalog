@@ -14,3 +14,13 @@ func EnumeratedBindvars(columns []string) string {
 
 	return strings.Join(values, ", ")
 }
+
+// UpdateColumnsValues is func to convert list columns to update query
+func UpdateColumnsValues(columns []string) string {
+	var keyValues []string
+	for i, column := range columns {
+		keyValues = append(keyValues, fmt.Sprintf("%s = $%d", column, i+1))
+	}
+
+	return strings.Join(keyValues, ", ")
+}
