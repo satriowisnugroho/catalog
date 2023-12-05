@@ -14,6 +14,20 @@ type ProductRepositoryInterface struct {
 	mock.Mock
 }
 
+// CreateProduct provides a mock function with given fields: ctx, product
+func (_m *ProductRepositoryInterface) CreateProduct(ctx context.Context, product *entity.Product) error {
+	ret := _m.Called(ctx, product)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *entity.Product) error); ok {
+		r0 = rf(ctx, product)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // GetProductByID provides a mock function with given fields: ctx, productID
 func (_m *ProductRepositoryInterface) GetProductByID(ctx context.Context, productID int64) (*entity.Product, error) {
 	ret := _m.Called(ctx, productID)

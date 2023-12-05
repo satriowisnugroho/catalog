@@ -3,7 +3,9 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"log"
 	"strings"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
@@ -15,6 +17,7 @@ import (
 
 // ProductRepositoryInterface define contract for product related functions to repository
 type ProductRepositoryInterface interface {
+	CreateProduct(ctx context.Context, product *entity.Product) error
 	GetProductByID(ctx context.Context, productID int64) (*entity.Product, error)
 }
 
@@ -30,6 +33,11 @@ var (
 	ProductColumns = []string{"id", "sku", "title", "category", "condition", "tenant", "qty", "price", "created_at", "updated_at"}
 	// ProductAttributes hold string format of all products table columns
 	ProductAttributes = strings.Join(ProductColumns, ", ")
+
+	// ProductCreationColumns list all columns used for create product
+	ProductCreationColumns = ProductColumns[1:]
+	// ProductCreationAttributes hold string format of all creation product columns
+	ProductCreationAttributes = strings.Join(ProductCreationColumns, ", ")
 )
 
 // NewProductRepository create initiate product repository with given database
@@ -57,6 +65,39 @@ func (r *ProductRepository) fetch(ctx context.Context, query string, args ...int
 	}
 
 	return result, nil
+}
+
+// CreateProduct insert product data into database
+func (r *ProductRepository) CreateProduct(ctx context.Context, product *entity.Product) error {
+	functionName := "ProductRepository.CreateProduct"
+
+	if err := helper.CheckDeadline(ctx); err != nil {
+		return errors.Wrap(err, functionName)
+	}
+
+	now := time.Now()
+	product.CreatedAt = now
+	product.UpdatedAt = now
+
+	query := fmt.Sprintf(`INSERT INTO %s (%s) VALUES (%s) RETURNING id`, ProductTableName, ProductCreationAttributes, EnumeratedBindvars(ProductCreationColumns))
+	log.Print(query)
+
+	err := r.db.QueryRowContext(ctx, query,
+		product.SKU,
+		product.Title,
+		product.Category,
+		product.Condition,
+		product.Tenant,
+		product.Qty,
+		product.Price,
+		product.CreatedAt,
+		product.UpdatedAt,
+	).Scan(&product.ID)
+	if err != nil {
+		return errors.Wrap(err, functionName)
+	}
+
+	return nil
 }
 
 // GetProductByID return product by id

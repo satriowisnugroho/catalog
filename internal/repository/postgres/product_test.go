@@ -13,6 +13,62 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestCreateProduct(t *testing.T) {
+	testcases := []struct {
+		name      string
+		ctx       context.Context
+		input     *entity.Product
+		createErr error
+		wantErr   bool
+	}{
+		{
+			name:    "deadline context",
+			ctx:     fixture.CtxEnded(),
+			wantErr: true,
+		},
+		{
+			name:      "fail exec query",
+			ctx:       context.Background(),
+			input:     &entity.Product{},
+			createErr: errors.New("fail exec"),
+			wantErr:   true,
+		},
+		{
+			name:    "success",
+			ctx:     context.Background(),
+			input:   &entity.Product{},
+			wantErr: false,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer db.Close()
+
+			if tc.createErr != nil {
+				mock.ExpectQuery("^INSERT INTO(.+)").WillReturnError(tc.createErr)
+			} else {
+				row := sqlmock.NewRows([]string{"id"})
+				result := row.AddRow(1)
+				mock.ExpectQuery("^INSERT INTO(.+)").WillReturnRows(result)
+			}
+
+			dbx := sqlx.NewDb(db, "mock")
+			repo := postgres.NewProductRepository(dbx)
+
+			err = repo.CreateProduct(tc.ctx, tc.input)
+			assert.Equal(t, tc.wantErr, err != nil)
+			if !tc.wantErr {
+				assert.Equal(t, 1, tc.input.ID)
+			}
+		})
+	}
+}
+
 func TestGetProductByID(t *testing.T) {
 	testcases := []struct {
 		name      string
