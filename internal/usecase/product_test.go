@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/satriowisnugroho/catalog/internal/entity"
+	"github.com/satriowisnugroho/catalog/internal/entity/types"
 	"github.com/satriowisnugroho/catalog/internal/response"
 	"github.com/satriowisnugroho/catalog/internal/usecase"
 	"github.com/satriowisnugroho/catalog/test/fixture"
@@ -94,6 +95,55 @@ func TestGetProductByID(t *testing.T) {
 
 			uc := usecase.NewProductUsecase(productRepo)
 			_, err := uc.GetProductByID(tc.ctx, 123)
+			assert.Equal(t, tc.wantErr, err != nil)
+		})
+	}
+}
+
+func TestGetProducts(t *testing.T) {
+	testcases := []struct {
+		name                 string
+		ctx                  context.Context
+		data                 *entity.GetProductPayload
+		rGetProductsRes      []*entity.Product
+		rGetProductsErr      error
+		rGetProductsCountRes int
+		rGetProductsCountErr error
+		wantErr              bool
+	}{
+		{
+			name:    "deadline context",
+			ctx:     fixture.CtxEnded(),
+			wantErr: true,
+		},
+		{
+			name:            "failed to get products",
+			ctx:             context.Background(),
+			rGetProductsErr: errors.New("error get products"),
+			wantErr:         true,
+		},
+		{
+			name:                 "failed to get products count",
+			ctx:                  context.Background(),
+			rGetProductsCountErr: errors.New("error get products count"),
+			wantErr:              true,
+		},
+		{
+			name:    "success",
+			ctx:     context.Background(),
+			data:    &entity.GetProductPayload{Tenant: types.TenantLoremType},
+			wantErr: false,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			productRepo := &testmock.ProductRepositoryInterface{}
+			productRepo.On("GetProducts", mock.Anything, mock.Anything).Return(tc.rGetProductsRes, tc.rGetProductsErr)
+			productRepo.On("GetProductsCount", mock.Anything, mock.Anything).Return(tc.rGetProductsCountRes, tc.rGetProductsCountErr)
+
+			uc := usecase.NewProductUsecase(productRepo)
+			_, _, err := uc.GetProducts(tc.ctx, tc.data)
 			assert.Equal(t, tc.wantErr, err != nil)
 		})
 	}

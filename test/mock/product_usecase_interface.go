@@ -60,6 +60,36 @@ func (_m *ProductUsecaseInterface) GetProductByID(ctx context.Context, productID
 	return r0, r1
 }
 
+// GetProducts provides a mock function with given fields: ctx, payload
+func (_m *ProductUsecaseInterface) GetProducts(ctx context.Context, payload *entity.GetProductPayload) ([]*entity.Product, int, error) {
+	ret := _m.Called(ctx, payload)
+
+	var r0 []*entity.Product
+	if rf, ok := ret.Get(0).(func(context.Context, *entity.GetProductPayload) []*entity.Product); ok {
+		r0 = rf(ctx, payload)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*entity.Product)
+		}
+	}
+
+	var r1 int
+	if rf, ok := ret.Get(1).(func(context.Context, *entity.GetProductPayload) int); ok {
+		r1 = rf(ctx, payload)
+	} else {
+		r1 = ret.Get(1).(int)
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(context.Context, *entity.GetProductPayload) error); ok {
+		r2 = rf(ctx, payload)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // UpdateProduct provides a mock function with given fields: ctx, productID, productPayload
 func (_m *ProductUsecaseInterface) UpdateProduct(ctx context.Context, productID int, productPayload *entity.ProductPayload) (*entity.Product, error) {
 	ret := _m.Called(ctx, productID, productPayload)

@@ -15,6 +15,7 @@ import (
 type ProductUsecaseInterface interface {
 	CreateProduct(ctx context.Context, productPayload *entity.ProductPayload) (*entity.Product, error)
 	GetProductByID(ctx context.Context, productID int) (*entity.Product, error)
+	GetProducts(ctx context.Context, payload *entity.GetProductPayload) ([]*entity.Product, int, error)
 	UpdateProduct(ctx context.Context, productID int, productPayload *entity.ProductPayload) (*entity.Product, error)
 }
 
@@ -60,6 +61,26 @@ func (uc *ProductUsecase) GetProductByID(ctx context.Context, productID int) (*e
 	}
 
 	return product, nil
+}
+
+func (uc *ProductUsecase) GetProducts(ctx context.Context, payload *entity.GetProductPayload) ([]*entity.Product, int, error) {
+	functionName := "ProductUsecase.GetProducts"
+
+	if err := helper.CheckDeadline(ctx); err != nil {
+		return nil, 0, errors.Wrap(err, functionName)
+	}
+
+	products, err := uc.repo.GetProducts(ctx, payload)
+	if err != nil {
+		return nil, 0, errors.Wrap(fmt.Errorf("uc.repo.GetProducts: %w", err), functionName)
+	}
+
+	count, err := uc.repo.GetProductsCount(ctx, payload)
+	if err != nil {
+		return nil, 0, errors.Wrap(fmt.Errorf("uc.repo.GetProductsCount: %w", err), functionName)
+	}
+
+	return products, count, nil
 }
 
 func (uc *ProductUsecase) UpdateProduct(ctx context.Context, productID int, productPayload *entity.ProductPayload) (*entity.Product, error) {
