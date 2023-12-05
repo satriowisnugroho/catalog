@@ -1,5 +1,28 @@
 basePath: /v1
 definitions:
+  entity.Product:
+    properties:
+      category:
+        type: string
+      condition:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: integer
+      price:
+        type: integer
+      qty:
+        type: integer
+      sku:
+        type: string
+      tenant:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
   response.ErrorBody:
     properties:
       errors:
@@ -16,6 +39,11 @@ definitions:
         type: string
       message:
         type: string
+    type: object
+  response.MetaInfo:
+    properties:
+      http_status:
+        type: integer
     type: object
   response.SuccessBody:
     properties:
@@ -49,7 +77,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.SuccessBody'
+            allOf:
+            - $ref: '#/definitions/response.SuccessBody'
+            - properties:
+                data:
+                  $ref: '#/definitions/entity.Product'
+                meta:
+                  $ref: '#/definitions/response.MetaInfo'
+              type: object
         "404":
           description: Not Found
           schema:

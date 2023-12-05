@@ -43,7 +43,22 @@ const docTemplate_swagger = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.SuccessBody"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessBody"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/entity.Product"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/response.MetaInfo"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
@@ -63,6 +78,41 @@ const docTemplate_swagger = `{
         }
     },
     "definitions": {
+        "entity.Product": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "condition": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "qty": {
+                    "type": "integer"
+                },
+                "sku": {
+                    "type": "string"
+                },
+                "tenant": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "response.ErrorBody": {
             "type": "object",
             "properties": {
@@ -86,6 +136,14 @@ const docTemplate_swagger = `{
                 },
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "response.MetaInfo": {
+            "type": "object",
+            "properties": {
+                "http_status": {
+                    "type": "integer"
                 }
             }
         },

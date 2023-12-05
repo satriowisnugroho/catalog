@@ -7,6 +7,9 @@ import (
 	"github.com/satriowisnugroho/catalog/internal/response"
 	"github.com/satriowisnugroho/catalog/internal/usecase"
 	"github.com/satriowisnugroho/catalog/pkg/logger"
+
+	// Import entity for swagger success response
+	_ "github.com/satriowisnugroho/catalog/internal/entity"
 )
 
 type ProductHandler struct {
@@ -30,7 +33,7 @@ func newProductHandler(handler *gin.RouterGroup, l logger.LoggerInterface, pu us
 // @Accept      json
 // @Param      	id path int true "Product ID"
 // @Produce     json
-// @Success     200 {object} response.SuccessBody
+// @Success     200 {object} response.SuccessBody{data=entity.Product,meta=response.MetaInfo}
 // @Failure     404 {object} response.ErrorBody
 // @Failure     500 {object} response.ErrorBody
 // @Router      /products/{id} [get]

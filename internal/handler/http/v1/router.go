@@ -8,7 +8,7 @@ import (
 	ginswagger "github.com/swaggo/gin-swagger"
 
 	// Swagger docs.
-	// _ "github.com/satriowisnugroho/catalog/docs"
+	_ "github.com/satriowisnugroho/catalog/docs"
 	"github.com/satriowisnugroho/catalog/internal/usecase"
 	"github.com/satriowisnugroho/catalog/pkg/logger"
 )
