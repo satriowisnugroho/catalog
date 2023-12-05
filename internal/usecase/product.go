@@ -15,6 +15,7 @@ import (
 type ProductUsecaseInterface interface {
 	CreateProduct(ctx context.Context, productPayload *entity.ProductPayload) (*entity.Product, error)
 	GetProductByID(ctx context.Context, productID int) (*entity.Product, error)
+	UpdateProduct(ctx context.Context, productID int, productPayload *entity.ProductPayload) (*entity.Product, error)
 }
 
 type ProductUsecase struct {
@@ -56,6 +57,35 @@ func (uc *ProductUsecase) GetProductByID(ctx context.Context, productID int) (*e
 		}
 
 		return nil, errors.Wrap(fmt.Errorf("uc.repo.GetProductByID: %w", err), functionName)
+	}
+
+	return product, nil
+}
+
+func (uc *ProductUsecase) UpdateProduct(ctx context.Context, productID int, productPayload *entity.ProductPayload) (*entity.Product, error) {
+	functionName := "ProductUsecase.UpdateProduct"
+
+	if err := helper.CheckDeadline(ctx); err != nil {
+		return nil, errors.Wrap(err, functionName)
+	}
+
+	product, err := uc.repo.GetProductByID(ctx, productID)
+	if err != nil {
+		if err == response.ErrNotFound {
+			return nil, err
+		}
+
+		return nil, errors.Wrap(fmt.Errorf("uc.repo.GetProductByID: %w", err), functionName)
+	}
+
+	product.Title = productPayload.Title
+	product.Category = productPayload.Category
+	product.Condition = productPayload.Condition
+	product.Tenant = productPayload.Tenant
+	product.Qty = productPayload.Qty
+	product.Price = productPayload.Price
+	if err := uc.repo.UpdateProduct(ctx, product); err != nil {
+		return nil, errors.Wrap(fmt.Errorf("uc.repo.UpdateProduct: %w", err), functionName)
 	}
 
 	return product, nil
