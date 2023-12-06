@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/satriowisnugroho/catalog/internal/entity/types"
+	"github.com/satriowisnugroho/catalog/internal/response"
 )
 
 // Product struct holds entity of product
@@ -43,6 +44,15 @@ type BulkReduceQtyProductItemPayload struct {
 	ReqQty int    `json:"req_qty"`
 }
 
+// SwaggerProductPayload holds product payload for swagger docs
+type SwaggerProductPayload struct {
+	Title     string `json:"title"`
+	Category  string `json:"category"`
+	Condition int8   `json:"condition"`
+	Qty       int    `json:"qty"`
+	Price     int    `json:"price"`
+}
+
 // ProductPayload holds product payload representative
 type ProductPayload struct {
 	Title     string           `json:"title"`
@@ -51,15 +61,6 @@ type ProductPayload struct {
 	Tenant    types.TenantType `json:"-"`
 	Qty       int              `json:"qty"`
 	Price     int              `json:"price"`
-}
-
-// SwaggerProductPayload holds product payload for swagger docs
-type SwaggerProductPayload struct {
-	Title     string `json:"title"`
-	Category  string `json:"category"`
-	Condition int8   `json:"condition"`
-	Qty       int    `json:"qty"`
-	Price     int    `json:"price"`
 }
 
 // ToEntity to convert product payload to entity contract
@@ -72,4 +73,13 @@ func (p *ProductPayload) ToEntity() *Product {
 		Qty:       p.Qty,
 		Price:     p.Price,
 	}
+}
+
+// Validate is func to validate payload
+func (p *ProductPayload) Validate() error {
+	if p.Tenant == types.TenantEmptyType {
+		return response.ErrInvalidTenant
+	}
+
+	return nil
 }

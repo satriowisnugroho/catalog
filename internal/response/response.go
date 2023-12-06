@@ -102,6 +102,8 @@ const (
 	ErrorCodeInsufficientStock = 10001
 	// ErrorCodeForbidden Error code for forbidden
 	ErrorCodeForbidden = 10002
+	// ErrorCodeInvalidTenant Error code for invalid tenant
+	ErrorCodeInvalidTenant = 10003
 
 	// ErrorCodeNoSQLTransactionFound Error code for no sql transaction found
 	ErrorCodeNoSQLTransactionFound = 9000
@@ -133,6 +135,12 @@ var (
 		Message:  "Forbidden",
 		Code:     ErrorCodeForbidden,
 		HTTPCode: http.StatusForbidden,
+	}
+	// ErrInvalidTenant define error when invalid tenant
+	ErrInvalidTenant = CustomError{
+		Message:  "Invalid tenant",
+		Code:     ErrorCodeInvalidTenant,
+		HTTPCode: http.StatusUnprocessableEntity,
 	}
 
 	// ErrNoSQLTransactionFound defines no sql transaction when do the db transaction

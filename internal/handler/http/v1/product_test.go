@@ -26,17 +26,19 @@ func TestCreateProduct(t *testing.T) {
 		httpStatusCodeRes int
 	}{
 		{
-			name:              "invalid type for tenant",
-			pProductErr:       response.CustomError{HTTPCode: http.StatusUnprocessableEntity},
-			httpStatusCodeRes: http.StatusUnprocessableEntity,
-		},
-		{
 			name:              "failed to parse product payload",
 			pProductErr:       errors.New("error parse product payload"),
 			httpStatusCodeRes: http.StatusInternalServerError,
 		},
 		{
+			name:              "invalid type for tenant",
+			pProductRes:       &entity.ProductPayload{},
+			uProductErr:       response.ErrInvalidTenant,
+			httpStatusCodeRes: http.StatusUnprocessableEntity,
+		},
+		{
 			name:              "failed to create product",
+			pProductRes:       &entity.ProductPayload{},
 			uProductErr:       errors.New("error create product"),
 			httpStatusCodeRes: http.StatusInternalServerError,
 		},
@@ -172,7 +174,7 @@ func TestGetProductByID(t *testing.T) {
 			pp := &testmock.ProductParserInterface{}
 
 			productUsecase := &testmock.ProductUsecaseInterface{}
-			productUsecase.On("GetProductByID", mock.Anything, mock.Anything).Return(&entity.Product{Tenant: types.TenantLoremType}, tc.uProductErr)
+			productUsecase.On("GetProductByID", mock.Anything, mock.Anything, mock.Anything).Return(&entity.Product{Tenant: types.TenantLoremType}, tc.uProductErr)
 
 			h := &httpv1.ProductHandler{l, pp, productUsecase}
 			h.GetProductByID(ctx)
@@ -232,17 +234,19 @@ func TestUpdateProduct(t *testing.T) {
 		httpStatusCodeRes int
 	}{
 		{
-			name:              "invalid type for tenant",
-			pProductErr:       response.CustomError{HTTPCode: http.StatusUnprocessableEntity},
-			httpStatusCodeRes: http.StatusUnprocessableEntity,
-		},
-		{
 			name:              "failed to parse product payload",
 			pProductErr:       errors.New("error parse product payload"),
 			httpStatusCodeRes: http.StatusInternalServerError,
 		},
 		{
+			name:              "forbidden",
+			pProductRes:       &entity.ProductPayload{},
+			uProductErr:       response.ErrForbidden,
+			httpStatusCodeRes: http.StatusForbidden,
+		},
+		{
 			name:              "failed to update product",
+			pProductRes:       &entity.ProductPayload{},
 			uProductErr:       errors.New("error update product"),
 			httpStatusCodeRes: http.StatusInternalServerError,
 		},

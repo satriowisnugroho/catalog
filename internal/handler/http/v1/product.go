@@ -56,12 +56,6 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 
 	payload, err := h.ProductParser.ParseProductPayload(c.Request.Body)
 	if err != nil {
-		switch err.(type) {
-		case response.CustomError:
-			response.Error(c, err)
-			return
-		}
-
 		err = errors.Wrap(fmt.Errorf("h.productParser.ParseProductPayload: %w", err), functionName)
 		h.Logger.Error(err)
 		response.Error(c, err)
@@ -71,6 +65,12 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 	payload.Tenant = helper.GetTenant(c)
 	product, err := h.ProductUsecase.CreateProduct(c.Request.Context(), payload)
 	if err != nil {
+		switch err.(type) {
+		case response.CustomError:
+			response.Error(c, err)
+			return
+		}
+
 		err = errors.Wrap(fmt.Errorf("h.ProductUsecase.CreateProduct: %w", err), functionName)
 		h.Logger.Error(err)
 		response.Error(c, err)
@@ -209,12 +209,6 @@ func (h *ProductHandler) UpdateProduct(c *gin.Context) {
 
 	payload, err := h.ProductParser.ParseProductPayload(c.Request.Body)
 	if err != nil {
-		switch err.(type) {
-		case response.CustomError:
-			response.Error(c, err)
-			return
-		}
-
 		err = errors.Wrap(fmt.Errorf("h.productParser.ParseProductPayload: %w", err), functionName)
 		h.Logger.Error(err)
 		response.Error(c, err)
@@ -225,6 +219,12 @@ func (h *ProductHandler) UpdateProduct(c *gin.Context) {
 	payload.Tenant = helper.GetTenant(c)
 	product, err := h.ProductUsecase.UpdateProduct(c.Request.Context(), productID, payload)
 	if err != nil {
+		switch err.(type) {
+		case response.CustomError:
+			response.Error(c, err)
+			return
+		}
+
 		err = errors.Wrap(fmt.Errorf("h.ProductUsecase.UpdateProduct: %w", err), functionName)
 		h.Logger.Error(err)
 		response.Error(c, err)

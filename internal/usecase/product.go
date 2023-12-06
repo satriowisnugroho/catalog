@@ -40,7 +40,9 @@ func (uc *ProductUsecase) CreateProduct(ctx context.Context, payload *entity.Pro
 		return nil, errors.Wrap(err, functionName)
 	}
 
-	// TODO: Validate payload. tenant type, etc
+	if err := payload.Validate(); err != nil {
+		return nil, err
+	}
 
 	product := payload.ToEntity()
 	if err := uc.repo.CreateProduct(ctx, product); err != nil {

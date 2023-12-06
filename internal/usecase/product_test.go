@@ -30,16 +30,22 @@ func TestCreateProduct(t *testing.T) {
 			wantErr: true,
 		},
 		{
+			name:    "invalid payload",
+			ctx:     context.Background(),
+			payload: &entity.ProductPayload{Tenant: types.TenantEmptyType},
+			wantErr: true,
+		},
+		{
 			name:        "failed to create product",
 			ctx:         context.Background(),
-			payload:     &entity.ProductPayload{},
+			payload:     &entity.ProductPayload{Tenant: types.TenantLoremType},
 			rProductErr: errors.New("error create product"),
 			wantErr:     true,
 		},
 		{
 			name:    "success",
 			ctx:     context.Background(),
-			payload: &entity.ProductPayload{Title: "New Product"},
+			payload: &entity.ProductPayload{Title: "New Product", Tenant: types.TenantLoremType},
 			wantErr: false,
 		},
 	}
