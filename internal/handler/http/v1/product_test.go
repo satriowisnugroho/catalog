@@ -124,7 +124,7 @@ func TestBulkReduceQtyProduct(t *testing.T) {
 			pp.On("ParseBulkReduceQtyProductPayload", mock.Anything).Return(tc.pProductRes, tc.pProductErr)
 
 			productUsecase := &testmock.ProductUsecaseInterface{}
-			productUsecase.On("BulkReduceQtyProduct", mock.Anything, mock.Anything).Return(tc.uProductRes, tc.uProductErr)
+			productUsecase.On("BulkReduceQtyProduct", mock.Anything, mock.Anything, mock.Anything).Return(tc.uProductRes, tc.uProductErr)
 
 			h := &httpv1.ProductHandler{l, pp, productUsecase}
 			h.BulkReduceQtyProduct(ctx)

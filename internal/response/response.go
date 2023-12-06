@@ -100,6 +100,8 @@ const (
 	ErrorCodeNotFound = 10000
 	// ErrorCodeInsufficientStock Error code for insufficient quantity
 	ErrorCodeInsufficientStock = 10001
+	// ErrorCodeForbidden Error code for forbidden
+	ErrorCodeForbidden = 10002
 
 	// ErrorCodeNoSQLTransactionFound Error code for no sql transaction found
 	ErrorCodeNoSQLTransactionFound = 9000
@@ -125,6 +127,12 @@ var (
 		Message:  "Insufficient quantity",
 		Code:     ErrorCodeInsufficientStock,
 		HTTPCode: http.StatusUnprocessableEntity,
+	}
+	// ErrForbidden define error when forbidden
+	ErrForbidden = CustomError{
+		Message:  "Forbidden",
+		Code:     ErrorCodeForbidden,
+		HTTPCode: http.StatusForbidden,
 	}
 
 	// ErrNoSQLTransactionFound defines no sql transaction when do the db transaction

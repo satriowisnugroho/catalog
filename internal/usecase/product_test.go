@@ -60,6 +60,7 @@ func TestBulkReduceQtyProduct(t *testing.T) {
 	testcases := []struct {
 		name              string
 		ctx               context.Context
+		tenant            types.TenantType
 		payload           *entity.BulkReduceQtyProductPayload
 		rStartTrxErr      error
 		rCommitTrxErr     error
@@ -91,6 +92,14 @@ func TestBulkReduceQtyProduct(t *testing.T) {
 			ctx:            context.Background(),
 			payload:        &entity.BulkReduceQtyProductPayload{Items: []entity.BulkReduceQtyProductItemPayload{{SKU: "SKU-123", ReqQty: 1}}},
 			rGetProductErr: errors.New("error get product"),
+			wantErr:        true,
+		},
+		{
+			name:           "forbidden",
+			ctx:            context.Background(),
+			tenant:         types.TenantIpsumType,
+			payload:        &entity.BulkReduceQtyProductPayload{Items: []entity.BulkReduceQtyProductItemPayload{{SKU: "SKU-123", ReqQty: 11}}},
+			rGetProductRes: &entity.Product{Qty: 10, Tenant: types.TenantLoremType},
 			wantErr:        true,
 		},
 		{
@@ -137,7 +146,7 @@ func TestBulkReduceQtyProduct(t *testing.T) {
 			dbTransactionRepo.On("RollbackTransactionQuery", mock.Anything, mock.Anything).Return(nil)
 
 			uc := usecase.NewProductUsecase(productRepo, dbTransactionRepo)
-			_, err := uc.BulkReduceQtyProduct(tc.ctx, tc.payload)
+			_, err := uc.BulkReduceQtyProduct(tc.ctx, tc.tenant, tc.payload)
 			assert.Equal(t, tc.wantErr, err != nil)
 		})
 	}

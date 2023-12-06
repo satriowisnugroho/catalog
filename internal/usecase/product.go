@@ -6,6 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/satriowisnugroho/catalog/internal/entity"
+	"github.com/satriowisnugroho/catalog/internal/entity/types"
 	"github.com/satriowisnugroho/catalog/internal/helper"
 	repo "github.com/satriowisnugroho/catalog/internal/repository/postgres"
 	"github.com/satriowisnugroho/catalog/internal/response"
@@ -14,7 +15,7 @@ import (
 // ProductUsecaseInterface define contract for product related functions to usecase
 type ProductUsecaseInterface interface {
 	CreateProduct(ctx context.Context, payload *entity.ProductPayload) (*entity.Product, error)
-	BulkReduceQtyProduct(ctx context.Context, payload *entity.BulkReduceQtyProductPayload) ([]*entity.Product, error)
+	BulkReduceQtyProduct(ctx context.Context, tenant types.TenantType, payload *entity.BulkReduceQtyProductPayload) ([]*entity.Product, error)
 	GetProductByID(ctx context.Context, productID int) (*entity.Product, error)
 	GetProducts(ctx context.Context, payload *entity.GetProductPayload) ([]*entity.Product, int, error)
 	UpdateProduct(ctx context.Context, productID int, payload *entity.ProductPayload) (*entity.Product, error)
@@ -47,7 +48,7 @@ func (uc *ProductUsecase) CreateProduct(ctx context.Context, payload *entity.Pro
 	return product, nil
 }
 
-func (uc *ProductUsecase) BulkReduceQtyProduct(ctx context.Context, payload *entity.BulkReduceQtyProductPayload) ([]*entity.Product, error) {
+func (uc *ProductUsecase) BulkReduceQtyProduct(ctx context.Context, tenant types.TenantType, payload *entity.BulkReduceQtyProductPayload) ([]*entity.Product, error) {
 	functionName := "ProductUsecase.BulkReduceQtyProduct"
 
 	if err := helper.CheckDeadline(ctx); err != nil {
@@ -79,7 +80,9 @@ func (uc *ProductUsecase) BulkReduceQtyProduct(ctx context.Context, payload *ent
 			return nil, errors.Wrap(fmt.Errorf("uc.repo.GetProductBySKU: %w", err), functionName)
 		}
 
-		// TODO: Check tenant, if it doesn't belong to product, return 403 forbiden
+		if product.Tenant != tenant {
+			return nil, response.ErrForbidden
+		}
 
 		product.Qty = product.Qty - item.ReqQty
 		if product.Qty < 0 {

@@ -102,7 +102,7 @@ func (h *ProductHandler) BulkReduceQtyProduct(c *gin.Context) {
 		return
 	}
 
-	if _, err = h.ProductUsecase.BulkReduceQtyProduct(c.Request.Context(), payload); err != nil {
+	if _, err = h.ProductUsecase.BulkReduceQtyProduct(c.Request.Context(), helper.GetTenant(c), payload); err != nil {
 		switch err.(type) {
 		case response.CustomError:
 			response.Error(c, err)
