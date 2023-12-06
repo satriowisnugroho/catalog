@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -21,6 +20,7 @@ import (
 type ProductRepositoryInterface interface {
 	CreateProduct(ctx context.Context, product *entity.Product) error
 	GetProductByID(ctx context.Context, productID int) (*entity.Product, error)
+	GetProductBySKU(ctx context.Context, productSKU string) (*entity.Product, error)
 	GetProducts(ctx context.Context, payload *entity.GetProductPayload) ([]*entity.Product, error)
 	GetProductsCount(ctx context.Context, payload *entity.GetProductPayload) (int, error)
 	UpdateProduct(ctx context.Context, product *entity.Product) error
@@ -89,7 +89,6 @@ func (r *ProductRepository) CreateProduct(ctx context.Context, product *entity.P
 	product.SKU = helper.GenerateSKU()
 
 	query := fmt.Sprintf(`INSERT INTO %s (%s) VALUES (%s) RETURNING id`, ProductTableName, ProductCreationAttributes, EnumeratedBindvars(ProductCreationColumns))
-	log.Print(query)
 
 	// TODO: Get unique error (sku, tenant)
 	err := r.db.QueryRowContext(ctx, query,
@@ -120,6 +119,27 @@ func (r *ProductRepository) GetProductByID(ctx context.Context, productID int) (
 
 	query := fmt.Sprintf("SELECT %s FROM %s WHERE id = $1 LIMIT 1", ProductAttributes, ProductTableName)
 	rows, err := r.fetch(ctx, query, productID)
+	if err != nil {
+		return nil, errors.Wrap(err, functionName)
+	}
+
+	if len(rows) == 0 {
+		return nil, response.ErrNotFound
+	}
+
+	return rows[0], nil
+}
+
+// GetProductBySKU return product by sku
+func (r *ProductRepository) GetProductBySKU(ctx context.Context, productSKU string) (*entity.Product, error) {
+	functionName := "ProductRepository.GetProductBySKU"
+
+	if err := helper.CheckDeadline(ctx); err != nil {
+		return nil, errors.Wrap(err, functionName)
+	}
+
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE sku = $1 LIMIT 1", ProductAttributes, ProductTableName)
+	rows, err := r.fetch(ctx, query, productSKU)
 	if err != nil {
 		return nil, errors.Wrap(err, functionName)
 	}

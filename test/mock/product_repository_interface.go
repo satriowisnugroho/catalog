@@ -51,6 +51,29 @@ func (_m *ProductRepositoryInterface) GetProductByID(ctx context.Context, produc
 	return r0, r1
 }
 
+// GetProductBySKU provides a mock function with given fields: ctx, productSKU
+func (_m *ProductRepositoryInterface) GetProductBySKU(ctx context.Context, productSKU string) (*entity.Product, error) {
+	ret := _m.Called(ctx, productSKU)
+
+	var r0 *entity.Product
+	if rf, ok := ret.Get(0).(func(context.Context, string) *entity.Product); ok {
+		r0 = rf(ctx, productSKU)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*entity.Product)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, productSKU)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetProducts provides a mock function with given fields: ctx, payload
 func (_m *ProductRepositoryInterface) GetProducts(ctx context.Context, payload *entity.GetProductPayload) ([]*entity.Product, error) {
 	ret := _m.Called(ctx, payload)
