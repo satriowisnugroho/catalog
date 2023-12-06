@@ -124,7 +124,7 @@ var (
 	ErrInsufficientStock = CustomError{
 		Message:  "Insufficient quantity",
 		Code:     ErrorCodeInsufficientStock,
-		HTTPCode: http.StatusNotFound,
+		HTTPCode: http.StatusUnprocessableEntity,
 	}
 
 	// ErrNoSQLTransactionFound defines no sql transaction when do the db transaction

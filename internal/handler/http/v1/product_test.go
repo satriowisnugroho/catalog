@@ -90,6 +90,11 @@ func TestBulkReduceQtyProduct(t *testing.T) {
 			httpStatusCodeRes: http.StatusInternalServerError,
 		},
 		{
+			name:              "insufficient error",
+			uProductErr:       response.ErrInsufficientStock,
+			httpStatusCodeRes: http.StatusUnprocessableEntity,
+		},
+		{
 			name:              "failed to bulk reduce qty product",
 			uProductErr:       errors.New("error bulk reduce qty product"),
 			httpStatusCodeRes: http.StatusInternalServerError,

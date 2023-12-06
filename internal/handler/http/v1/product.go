@@ -103,6 +103,12 @@ func (h *ProductHandler) BulkReduceQtyProduct(c *gin.Context) {
 	}
 
 	if _, err = h.ProductUsecase.BulkReduceQtyProduct(c.Request.Context(), payload); err != nil {
+		switch err.(type) {
+		case response.CustomError:
+			response.Error(c, err)
+			return
+		}
+
 		err = errors.Wrap(fmt.Errorf("h.ProductUsecase.BulkReduceQtyProduct: %w", err), functionName)
 		h.Logger.Error(err)
 		response.Error(c, err)
