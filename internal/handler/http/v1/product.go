@@ -55,9 +55,8 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 
 	payload, err := h.ProductParser.ParseProductPayload(c.Request.Body)
 	if err != nil {
-		switch err.(type) {
-		case response.CustomError:
-			response.Error(c, err)
+		if customErr, ok := err.(response.CustomError); ok {
+			response.Error(c, customErr)
 			return
 		}
 
@@ -70,9 +69,8 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 	payload.Tenant = helper.GetTenant(c)
 	product, err := h.ProductUsecase.CreateProduct(c.Request.Context(), payload)
 	if err != nil {
-		switch err.(type) {
-		case response.CustomError:
-			response.Error(c, err)
+		if customErr, ok := err.(response.CustomError); ok {
+			response.Error(c, customErr)
 			return
 		}
 
@@ -111,9 +109,8 @@ func (h *ProductHandler) BulkReduceQtyProduct(c *gin.Context) {
 	}
 
 	if _, err = h.ProductUsecase.BulkReduceQtyProduct(c.Request.Context(), helper.GetTenant(c), payload); err != nil {
-		switch err.(type) {
-		case response.CustomError:
-			response.Error(c, err)
+		if customErr, ok := err.(response.CustomError); ok {
+			response.Error(c, customErr)
 			return
 		}
 
@@ -202,9 +199,8 @@ func (h *ProductHandler) UpdateProduct(c *gin.Context) {
 
 	payload, err := h.ProductParser.ParseProductPayload(c.Request.Body)
 	if err != nil {
-		switch err.(type) {
-		case response.CustomError:
-			response.Error(c, err)
+		if customErr, ok := err.(response.CustomError); ok {
+			response.Error(c, customErr)
 			return
 		}
 
@@ -218,9 +214,8 @@ func (h *ProductHandler) UpdateProduct(c *gin.Context) {
 	payload.Tenant = helper.GetTenant(c)
 	product, err := h.ProductUsecase.UpdateProduct(c.Request.Context(), productID, payload)
 	if err != nil {
-		switch err.(type) {
-		case response.CustomError:
-			response.Error(c, err)
+		if customErr, ok := err.(response.CustomError); ok {
+			response.Error(c, customErr)
 			return
 		}
 

@@ -34,9 +34,8 @@ func (p *ProductParser) ParseProductPayload(body io.Reader) (*entity.ProductPayl
 
 	var payload entity.ProductPayload
 	if err := json.NewDecoder(body).Decode(&payload); err != nil {
-		switch err.(type) {
-		case response.CustomError:
-			return nil, err
+		if customErr, ok := err.(response.CustomError); ok {
+			return nil, customErr
 		}
 
 		return nil, errors.Wrap(err, functionName)
@@ -69,9 +68,8 @@ func (p *ProductParser) ParseBulkReduceQtyProductPayload(body io.Reader) (*entit
 
 	var payload entity.BulkReduceQtyProductPayload
 	if err := json.NewDecoder(body).Decode(&payload); err != nil {
-		switch err.(type) {
-		case response.CustomError:
-			return nil, err
+		if customErr, ok := err.(response.CustomError); ok {
+			return nil, customErr
 		}
 
 		return nil, errors.Wrap(err, functionName)
