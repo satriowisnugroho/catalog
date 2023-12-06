@@ -33,6 +33,15 @@ const docTemplate_swagger = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "lorem",
+                        "example": "lorem, ipsum",
+                        "description": "Tenant Header",
+                        "name": "X-Tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "title search by keyword",
                         "name": "keyword",
                         "in": "query"
@@ -196,7 +205,16 @@ const docTemplate_swagger = `{
                 "operationId": "bulk-reduce-qty",
                 "parameters": [
                     {
-                        "description": "Bulk Reduce Qty Product Payload",
+                        "type": "string",
+                        "default": "lorem",
+                        "example": "lorem, ipsum",
+                        "description": "Tenant Header",
+                        "name": "X-Tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload",
                         "name": "request",
                         "in": "body",
                         "required": true,

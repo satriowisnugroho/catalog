@@ -101,6 +101,13 @@ paths:
       description: An API to show product list
       operationId: list
       parameters:
+      - default: lorem
+        description: Tenant Header
+        example: lorem, ipsum
+        in: header
+        name: X-Tenant
+        required: true
+        type: string
       - description: title search by keyword
         in: query
         name: keyword
@@ -287,7 +294,14 @@ paths:
       description: An API to bulk reduce quantity product
       operationId: bulk-reduce-qty
       parameters:
-      - description: Bulk Reduce Qty Product Payload
+      - default: lorem
+        description: Tenant Header
+        example: lorem, ipsum
+        in: header
+        name: X-Tenant
+        required: true
+        type: string
+      - description: Payload
         in: body
         name: request
         required: true
