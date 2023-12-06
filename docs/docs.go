@@ -137,7 +137,16 @@ const docTemplate_swagger = `{
                 "operationId": "create",
                 "parameters": [
                     {
-                        "description": "Product Payload",
+                        "type": "string",
+                        "default": "lorem",
+                        "example": "lorem, ipsum",
+                        "description": "Tenant Header",
+                        "name": "X-Tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "payload",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -287,6 +296,15 @@ const docTemplate_swagger = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "lorem",
+                        "example": "lorem, ipsum",
+                        "description": "Tenant Header",
+                        "name": "X-Tenant",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -347,7 +365,16 @@ const docTemplate_swagger = `{
                         "required": true
                     },
                     {
-                        "description": "Product Payload",
+                        "type": "string",
+                        "default": "lorem",
+                        "example": "lorem, ipsum",
+                        "description": "Tenant Header",
+                        "name": "X-Tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "payload",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -472,9 +499,6 @@ const docTemplate_swagger = `{
                 },
                 "qty": {
                     "type": "integer"
-                },
-                "tenant": {
-                    "type": "string"
                 },
                 "title": {
                     "type": "string"

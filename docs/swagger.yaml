@@ -47,8 +47,6 @@ definitions:
         type: integer
       qty:
         type: integer
-      tenant:
-        type: string
       title:
         type: string
     type: object
@@ -169,7 +167,14 @@ paths:
       description: An API to create product
       operationId: create
       parameters:
-      - description: Product Payload
+      - default: lorem
+        description: Tenant Header
+        example: lorem, ipsum
+        in: header
+        name: X-Tenant
+        required: true
+        type: string
+      - description: payload
         in: body
         name: request
         required: true
@@ -216,6 +221,13 @@ paths:
         name: id
         required: true
         type: integer
+      - default: lorem
+        description: Tenant Header
+        example: lorem, ipsum
+        in: header
+        name: X-Tenant
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -252,7 +264,14 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Product Payload
+      - default: lorem
+        description: Tenant Header
+        example: lorem, ipsum
+        in: header
+        name: X-Tenant
+        required: true
+        type: string
+      - description: payload
         in: body
         name: request
         required: true

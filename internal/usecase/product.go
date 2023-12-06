@@ -16,7 +16,7 @@ import (
 type ProductUsecaseInterface interface {
 	CreateProduct(ctx context.Context, payload *entity.ProductPayload) (*entity.Product, error)
 	BulkReduceQtyProduct(ctx context.Context, tenant types.TenantType, payload *entity.BulkReduceQtyProductPayload) ([]*entity.Product, error)
-	GetProductByID(ctx context.Context, productID int) (*entity.Product, error)
+	GetProductByID(ctx context.Context, tenant types.TenantType, productID int) (*entity.Product, error)
 	GetProducts(ctx context.Context, payload *entity.GetProductPayload) ([]*entity.Product, int, error)
 	UpdateProduct(ctx context.Context, productID int, payload *entity.ProductPayload) (*entity.Product, error)
 }
@@ -39,6 +39,8 @@ func (uc *ProductUsecase) CreateProduct(ctx context.Context, payload *entity.Pro
 	if err := helper.CheckDeadline(ctx); err != nil {
 		return nil, errors.Wrap(err, functionName)
 	}
+
+	// TODO: Validate payload. tenant type, etc
 
 	product := payload.ToEntity()
 	if err := uc.repo.CreateProduct(ctx, product); err != nil {
@@ -103,7 +105,7 @@ func (uc *ProductUsecase) BulkReduceQtyProduct(ctx context.Context, tenant types
 	return products, nil
 }
 
-func (uc *ProductUsecase) GetProductByID(ctx context.Context, productID int) (*entity.Product, error) {
+func (uc *ProductUsecase) GetProductByID(ctx context.Context, tenant types.TenantType, productID int) (*entity.Product, error) {
 	functionName := "ProductUsecase.GetProductByID"
 
 	if err := helper.CheckDeadline(ctx); err != nil {
@@ -117,6 +119,10 @@ func (uc *ProductUsecase) GetProductByID(ctx context.Context, productID int) (*e
 		}
 
 		return nil, errors.Wrap(fmt.Errorf("uc.repo.GetProductByID: %w", err), functionName)
+	}
+
+	if product.Tenant != tenant {
+		return nil, response.ErrForbidden
 	}
 
 	return product, nil
@@ -158,10 +164,13 @@ func (uc *ProductUsecase) UpdateProduct(ctx context.Context, productID int, payl
 		return nil, errors.Wrap(fmt.Errorf("uc.repo.GetProductByID: %w", err), functionName)
 	}
 
+	if product.Tenant != payload.Tenant {
+		return nil, response.ErrForbidden
+	}
+
 	product.Title = payload.Title
 	product.Category = payload.Category
 	product.Condition = payload.Condition
-	product.Tenant = payload.Tenant
 	product.Qty = payload.Qty
 	product.Price = payload.Price
 	if err := uc.repo.UpdateProduct(ctx, nil, product); err != nil {

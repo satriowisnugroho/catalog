@@ -62,13 +62,13 @@ func (_m *ProductUsecaseInterface) CreateProduct(ctx context.Context, payload *e
 	return r0, r1
 }
 
-// GetProductByID provides a mock function with given fields: ctx, productID
-func (_m *ProductUsecaseInterface) GetProductByID(ctx context.Context, productID int) (*entity.Product, error) {
-	ret := _m.Called(ctx, productID)
+// GetProductByID provides a mock function with given fields: ctx, tenant, productID
+func (_m *ProductUsecaseInterface) GetProductByID(ctx context.Context, tenant types.TenantType, productID int) (*entity.Product, error) {
+	ret := _m.Called(ctx, tenant, productID)
 
 	var r0 *entity.Product
-	if rf, ok := ret.Get(0).(func(context.Context, int) *entity.Product); ok {
-		r0 = rf(ctx, productID)
+	if rf, ok := ret.Get(0).(func(context.Context, types.TenantType, int) *entity.Product); ok {
+		r0 = rf(ctx, tenant, productID)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*entity.Product)
@@ -76,8 +76,8 @@ func (_m *ProductUsecaseInterface) GetProductByID(ctx context.Context, productID
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
-		r1 = rf(ctx, productID)
+	if rf, ok := ret.Get(1).(func(context.Context, types.TenantType, int) error); ok {
+		r1 = rf(ctx, tenant, productID)
 	} else {
 		r1 = ret.Error(1)
 	}

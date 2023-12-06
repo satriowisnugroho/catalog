@@ -44,7 +44,8 @@ func newProductHandler(
 // @Tags  	    product
 // @Accept      json
 // @Produce     json
-// @Param       request body entity.SwaggerProductPayload true "Product Payload"
+// @Param       X-Tenant	header	string 												true	"Tenant Header"		default(lorem)	example(lorem, ipsum)
+// @Param       request		body 		entity.SwaggerProductPayload	true 	"payload"
 // @Success     200 {object} response.SuccessBody{data=entity.Product,meta=response.MetaInfo}
 // @Failure     404 {object} response.ErrorBody
 // @Failure     422 {object} response.ErrorBody
@@ -67,6 +68,7 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 		return
 	}
 
+	payload.Tenant = helper.GetTenant(c)
 	product, err := h.ProductUsecase.CreateProduct(c.Request.Context(), payload)
 	if err != nil {
 		err = errors.Wrap(fmt.Errorf("h.ProductUsecase.CreateProduct: %w", err), functionName)
@@ -125,15 +127,16 @@ func (h *ProductHandler) BulkReduceQtyProduct(c *gin.Context) {
 // @ID          detail
 // @Tags  	    product
 // @Accept      json
-// @Param      	id path int true "Product ID"
 // @Produce     json
+// @Param      	id				path		int			true	"Product ID"
+// @Param       X-Tenant	header	string	true	"Tenant Header"	default(lorem)	example(lorem, ipsum)
 // @Success     200 {object} response.SuccessBody{data=entity.Product,meta=response.MetaInfo}
 // @Failure     404 {object} response.ErrorBody
 // @Failure     500 {object} response.ErrorBody
 // @Router      /products/{id} [get]
 func (h *ProductHandler) GetProductByID(c *gin.Context) {
 	productID, _ := strconv.Atoi(c.Param("id"))
-	product, err := h.ProductUsecase.GetProductByID(c.Request.Context(), productID)
+	product, err := h.ProductUsecase.GetProductByID(c.Request.Context(), helper.GetTenant(c), productID)
 	if err != nil {
 		h.Logger.Error(err, "http - v1 - GetProductByID")
 		response.Error(c, err)
@@ -194,7 +197,8 @@ func (h *ProductHandler) GetProducts(c *gin.Context) {
 // @Param      	id path int true "Product ID"
 // @Accept      json
 // @Produce     json
-// @Param       request body entity.SwaggerProductPayload true "Product Payload"
+// @Param       X-Tenant	header	string 												true	"Tenant Header"	default(lorem)	example(lorem, ipsum)
+// @Param       request 	body 		entity.SwaggerProductPayload	true	"payload"
 // @Success     200 {object} response.SuccessBody{data=entity.Product,meta=response.MetaInfo}
 // @Failure     404 {object} response.ErrorBody
 // @Failure     422 {object} response.ErrorBody
@@ -218,6 +222,7 @@ func (h *ProductHandler) UpdateProduct(c *gin.Context) {
 	}
 
 	productID, _ := strconv.Atoi(c.Param("id"))
+	payload.Tenant = helper.GetTenant(c)
 	product, err := h.ProductUsecase.UpdateProduct(c.Request.Context(), productID, payload)
 	if err != nil {
 		err = errors.Wrap(fmt.Errorf("h.ProductUsecase.UpdateProduct: %w", err), functionName)

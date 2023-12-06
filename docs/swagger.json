@@ -130,7 +130,16 @@
                 "operationId": "create",
                 "parameters": [
                     {
-                        "description": "Product Payload",
+                        "type": "string",
+                        "default": "lorem",
+                        "example": "lorem, ipsum",
+                        "description": "Tenant Header",
+                        "name": "X-Tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "payload",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -280,6 +289,15 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "lorem",
+                        "example": "lorem, ipsum",
+                        "description": "Tenant Header",
+                        "name": "X-Tenant",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -340,7 +358,16 @@
                         "required": true
                     },
                     {
-                        "description": "Product Payload",
+                        "type": "string",
+                        "default": "lorem",
+                        "example": "lorem, ipsum",
+                        "description": "Tenant Header",
+                        "name": "X-Tenant",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "payload",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -465,9 +492,6 @@
                 },
                 "qty": {
                     "type": "integer"
-                },
-                "tenant": {
-                    "type": "string"
                 },
                 "title": {
                     "type": "string"

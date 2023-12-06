@@ -48,7 +48,7 @@ type ProductPayload struct {
 	Title     string           `json:"title"`
 	Category  string           `json:"category"`
 	Condition int8             `json:"condition"`
-	Tenant    types.TenantType `json:"tenant"`
+	Tenant    types.TenantType `json:"-"`
 	Qty       int              `json:"qty"`
 	Price     int              `json:"price"`
 }
@@ -58,7 +58,6 @@ type SwaggerProductPayload struct {
 	Title     string `json:"title"`
 	Category  string `json:"category"`
 	Condition int8   `json:"condition"`
-	Tenant    string `json:"tenant"`
 	Qty       int    `json:"qty"`
 	Price     int    `json:"price"`
 }

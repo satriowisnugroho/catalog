@@ -20,7 +20,7 @@ func TestCreateProduct(t *testing.T) {
 	testcases := []struct {
 		name        string
 		ctx         context.Context
-		data        *entity.ProductPayload
+		payload     *entity.ProductPayload
 		rProductErr error
 		wantErr     bool
 	}{
@@ -32,14 +32,14 @@ func TestCreateProduct(t *testing.T) {
 		{
 			name:        "failed to create product",
 			ctx:         context.Background(),
-			data:        &entity.ProductPayload{},
+			payload:     &entity.ProductPayload{},
 			rProductErr: errors.New("error create product"),
 			wantErr:     true,
 		},
 		{
 			name:    "success",
 			ctx:     context.Background(),
-			data:    &entity.ProductPayload{Title: "New Product"},
+			payload: &entity.ProductPayload{Title: "New Product"},
 			wantErr: false,
 		},
 	}
@@ -50,7 +50,7 @@ func TestCreateProduct(t *testing.T) {
 			productRepo.On("CreateProduct", mock.Anything, mock.Anything).Return(tc.rProductErr)
 
 			uc := usecase.NewProductUsecase(productRepo, &testmock.PostgresTransactionRepositoryInterface{})
-			_, err := uc.CreateProduct(tc.ctx, tc.data)
+			_, err := uc.CreateProduct(tc.ctx, tc.payload)
 			assert.Equal(t, tc.wantErr, err != nil)
 		})
 	}
@@ -156,6 +156,7 @@ func TestGetProductByID(t *testing.T) {
 	testcases := []struct {
 		name        string
 		ctx         context.Context
+		tenant      types.TenantType
 		rProductRes *entity.Product
 		rProductErr error
 		wantErr     bool
@@ -178,6 +179,13 @@ func TestGetProductByID(t *testing.T) {
 			wantErr:     true,
 		},
 		{
+			name:        "forbidden",
+			ctx:         context.Background(),
+			tenant:      types.TenantIpsumType,
+			rProductRes: &entity.Product{ID: 123, Title: "New Product", Tenant: types.TenantLoremType},
+			wantErr:     true,
+		},
+		{
 			name:        "success",
 			ctx:         context.Background(),
 			rProductRes: &entity.Product{ID: 123, Title: "New Product"},
@@ -191,7 +199,7 @@ func TestGetProductByID(t *testing.T) {
 			productRepo.On("GetProductByID", mock.Anything, mock.Anything).Return(tc.rProductRes, tc.rProductErr)
 
 			uc := usecase.NewProductUsecase(productRepo, &testmock.PostgresTransactionRepositoryInterface{})
-			_, err := uc.GetProductByID(tc.ctx, 123)
+			_, err := uc.GetProductByID(tc.ctx, tc.tenant, 123)
 			assert.Equal(t, tc.wantErr, err != nil)
 		})
 	}
@@ -201,7 +209,7 @@ func TestGetProducts(t *testing.T) {
 	testcases := []struct {
 		name                 string
 		ctx                  context.Context
-		data                 *entity.GetProductPayload
+		payload              *entity.GetProductPayload
 		rGetProductsRes      []*entity.Product
 		rGetProductsErr      error
 		rGetProductsCountRes int
@@ -228,7 +236,7 @@ func TestGetProducts(t *testing.T) {
 		{
 			name:    "success",
 			ctx:     context.Background(),
-			data:    &entity.GetProductPayload{Tenant: types.TenantLoremType},
+			payload: &entity.GetProductPayload{Tenant: types.TenantLoremType},
 			wantErr: false,
 		},
 	}
@@ -240,7 +248,7 @@ func TestGetProducts(t *testing.T) {
 			productRepo.On("GetProductsCount", mock.Anything, mock.Anything).Return(tc.rGetProductsCountRes, tc.rGetProductsCountErr)
 
 			uc := usecase.NewProductUsecase(productRepo, &testmock.PostgresTransactionRepositoryInterface{})
-			_, _, err := uc.GetProducts(tc.ctx, tc.data)
+			_, _, err := uc.GetProducts(tc.ctx, tc.payload)
 			assert.Equal(t, tc.wantErr, err != nil)
 		})
 	}
@@ -251,7 +259,7 @@ func TestUpdateProduct(t *testing.T) {
 		name           string
 		ctx            context.Context
 		productID      int
-		data           *entity.ProductPayload
+		payload        *entity.ProductPayload
 		rGetProductRes *entity.Product
 		rGetProductErr error
 		rProductErr    error
@@ -275,11 +283,19 @@ func TestUpdateProduct(t *testing.T) {
 			wantErr:        true,
 		},
 		{
+			name:           "forbidden",
+			ctx:            context.Background(),
+			productID:      123,
+			payload:        &entity.ProductPayload{Tenant: types.TenantIpsumType},
+			rGetProductRes: &entity.Product{Tenant: types.TenantLoremType},
+			wantErr:        true,
+		},
+		{
 			name:           "failed to update product",
 			ctx:            context.Background(),
 			productID:      123,
+			payload:        &entity.ProductPayload{},
 			rGetProductRes: &entity.Product{},
-			data:           &entity.ProductPayload{},
 			rProductErr:    errors.New("error update product"),
 			wantErr:        true,
 		},
@@ -287,8 +303,8 @@ func TestUpdateProduct(t *testing.T) {
 			name:           "success",
 			ctx:            context.Background(),
 			productID:      123,
+			payload:        &entity.ProductPayload{Title: "New Product"},
 			rGetProductRes: &entity.Product{},
-			data:           &entity.ProductPayload{Title: "New Product"},
 			wantErr:        false,
 		},
 	}
@@ -300,7 +316,7 @@ func TestUpdateProduct(t *testing.T) {
 			productRepo.On("UpdateProduct", mock.Anything, mock.Anything, mock.Anything).Return(tc.rProductErr)
 
 			uc := usecase.NewProductUsecase(productRepo, &testmock.PostgresTransactionRepositoryInterface{})
-			_, err := uc.UpdateProduct(tc.ctx, tc.productID, tc.data)
+			_, err := uc.UpdateProduct(tc.ctx, tc.productID, tc.payload)
 			assert.Equal(t, tc.wantErr, err != nil)
 		})
 	}
