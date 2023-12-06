@@ -438,7 +438,7 @@ func TestUpdateProduct(t *testing.T) {
 
 			dbx := sqlx.NewDb(db, "mock")
 			repo := postgres.NewProductRepository(dbx)
-			err = repo.UpdateProduct(tc.ctx, &entity.Product{})
+			err = repo.UpdateProduct(tc.ctx, nil, &entity.Product{})
 			assert.Equal(t, tc.wantErr, err != nil, err)
 		})
 	}

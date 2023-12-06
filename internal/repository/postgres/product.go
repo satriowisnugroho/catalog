@@ -23,7 +23,7 @@ type ProductRepositoryInterface interface {
 	GetProductBySKU(ctx context.Context, productSKU string) (*entity.Product, error)
 	GetProducts(ctx context.Context, payload *entity.GetProductPayload) ([]*entity.Product, error)
 	GetProductsCount(ctx context.Context, payload *entity.GetProductPayload) (int, error)
-	UpdateProduct(ctx context.Context, product *entity.Product) error
+	UpdateProduct(ctx context.Context, dbTrx interface{}, product *entity.Product) error
 }
 
 // ProductRepository holds database connection
@@ -209,7 +209,7 @@ func (r *ProductRepository) GetProductsCount(ctx context.Context, payload *entit
 }
 
 // UpdateProduct update a product
-func (r *ProductRepository) UpdateProduct(ctx context.Context, product *entity.Product) error {
+func (r *ProductRepository) UpdateProduct(ctx context.Context, dbTrx interface{}, product *entity.Product) error {
 	functionName := "ProductRepository.UpdateProduct"
 
 	if err := helper.CheckDeadline(ctx); err != nil {
@@ -221,7 +221,8 @@ func (r *ProductRepository) UpdateProduct(ctx context.Context, product *entity.P
 
 	query := fmt.Sprintf("UPDATE %s SET %s WHERE id = $%d", ProductTableName, UpdateColumnsValues(ProductCreationColumns), len(ProductColumns))
 
-	_, err := r.db.ExecContext(
+	tx := Tx(r.db, dbTrx)
+	_, err := tx.ExecContext(
 		ctx,
 		query,
 		product.SKU,

@@ -21,12 +21,14 @@ type ProductUsecaseInterface interface {
 }
 
 type ProductUsecase struct {
-	repo repo.ProductRepositoryInterface
+	repo              repo.ProductRepositoryInterface
+	dbTransactionRepo repo.PostgresTransactionRepositoryInterface
 }
 
-func NewProductUsecase(r repo.ProductRepositoryInterface) *ProductUsecase {
+func NewProductUsecase(r repo.ProductRepositoryInterface, rPgTrx repo.PostgresTransactionRepositoryInterface) *ProductUsecase {
 	return &ProductUsecase{
-		repo: r,
+		repo:              r,
+		dbTransactionRepo: rPgTrx,
 	}
 }
 
@@ -52,7 +54,20 @@ func (uc *ProductUsecase) BulkReduceQtyProduct(ctx context.Context, payload *ent
 		return nil, errors.Wrap(err, functionName)
 	}
 
-	// TODO: Use transaction
+	// Begin transaction
+	tx, err := uc.dbTransactionRepo.StartTransactionQuery(ctx)
+	if err != nil {
+		return nil, errors.Wrap(fmt.Errorf("uc.dbTransactionRepo.StartTransactionQuery: %w", err), functionName)
+	}
+
+	// Create flag and defer rollback when flag is true
+	rollbackProcess := true
+	defer func() {
+		if rollbackProcess {
+			uc.dbTransactionRepo.RollbackTransactionQuery(ctx, tx)
+		}
+	}()
+
 	products := make([]*entity.Product, 0)
 	for _, item := range payload.Items {
 		product, err := uc.repo.GetProductBySKU(ctx, item.SKU)
@@ -71,10 +86,16 @@ func (uc *ProductUsecase) BulkReduceQtyProduct(ctx context.Context, payload *ent
 			return nil, response.ErrInsufficientStock
 		}
 
-		if err := uc.repo.UpdateProduct(ctx, product); err != nil {
+		if err := uc.repo.UpdateProduct(ctx, tx, product); err != nil {
 			return nil, errors.Wrap(fmt.Errorf("uc.repo.UpdateProduct: %w", err), functionName)
 		}
 	}
+
+	// Commit transaction
+	if err = uc.dbTransactionRepo.CommitTransactionQuery(ctx, tx); err != nil {
+		return nil, errors.Wrap(fmt.Errorf("uc.dbTransactionRepo.CommitTransactionQuery: %w", err), functionName)
+	}
+	rollbackProcess = false
 
 	return products, nil
 }
@@ -140,7 +161,7 @@ func (uc *ProductUsecase) UpdateProduct(ctx context.Context, productID int, payl
 	product.Tenant = payload.Tenant
 	product.Qty = payload.Qty
 	product.Price = payload.Price
-	if err := uc.repo.UpdateProduct(ctx, product); err != nil {
+	if err := uc.repo.UpdateProduct(ctx, nil, product); err != nil {
 		return nil, errors.Wrap(fmt.Errorf("uc.repo.UpdateProduct: %w", err), functionName)
 	}
 

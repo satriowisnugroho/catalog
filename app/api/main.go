@@ -31,10 +31,11 @@ func main() {
 	defer postgresDb.Db.Close()
 
 	// Initialize repositories
+	dbTransactionRepo := postgres.NewPostgresTransactionRepository(postgresDb.Db)
 	productRepo := postgres.NewProductRepository(postgresDb.Db)
 
 	// Initialize usecases
-	productUsecase := usecase.NewProductUsecase(productRepo)
+	productUsecase := usecase.NewProductUsecase(productRepo, dbTransactionRepo)
 
 	// Initialize parsers
 	productParser := parser.NewProductParser()

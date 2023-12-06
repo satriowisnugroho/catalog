@@ -118,13 +118,13 @@ func (_m *ProductRepositoryInterface) GetProductsCount(ctx context.Context, payl
 	return r0, r1
 }
 
-// UpdateProduct provides a mock function with given fields: ctx, product
-func (_m *ProductRepositoryInterface) UpdateProduct(ctx context.Context, product *entity.Product) error {
-	ret := _m.Called(ctx, product)
+// UpdateProduct provides a mock function with given fields: ctx, dbTx, product
+func (_m *ProductRepositoryInterface) UpdateProduct(ctx context.Context, dbTx interface{}, product *entity.Product) error {
+	ret := _m.Called(ctx, dbTx, product)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *entity.Product) error); ok {
-		r0 = rf(ctx, product)
+	if rf, ok := ret.Get(0).(func(context.Context, interface{}, *entity.Product) error); ok {
+		r0 = rf(ctx, dbTx, product)
 	} else {
 		r0 = ret.Error(0)
 	}

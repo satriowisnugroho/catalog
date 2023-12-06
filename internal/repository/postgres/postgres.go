@@ -3,6 +3,8 @@ package postgres
 import (
 	"fmt"
 	"strings"
+
+	"github.com/jmoiron/sqlx"
 )
 
 // EnumeratedBindvars is func to convert list columns to bindvars
@@ -23,4 +25,13 @@ func UpdateColumnsValues(columns []string) string {
 	}
 
 	return strings.Join(keyValues, ", ")
+}
+
+// Tx get db or transaction
+func Tx(db *sqlx.DB, iTrx interface{}) sqlx.ExtContext {
+	if iTrx == nil {
+		return db
+	}
+
+	return iTrx.(*sqlx.Tx)
 }

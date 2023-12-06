@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/satriowisnugroho/catalog/internal/entity"
 	"github.com/satriowisnugroho/catalog/internal/entity/types"
 	"github.com/satriowisnugroho/catalog/internal/response"
@@ -48,7 +49,7 @@ func TestCreateProduct(t *testing.T) {
 			productRepo := &testmock.ProductRepositoryInterface{}
 			productRepo.On("CreateProduct", mock.Anything, mock.Anything).Return(tc.rProductErr)
 
-			uc := usecase.NewProductUsecase(productRepo)
+			uc := usecase.NewProductUsecase(productRepo, &testmock.PostgresTransactionRepositoryInterface{})
 			_, err := uc.CreateProduct(tc.ctx, tc.data)
 			assert.Equal(t, tc.wantErr, err != nil)
 		})
@@ -60,6 +61,8 @@ func TestBulkReduceQtyProduct(t *testing.T) {
 		name              string
 		ctx               context.Context
 		payload           *entity.BulkReduceQtyProductPayload
+		rStartTrxErr      error
+		rCommitTrxErr     error
 		rGetProductRes    *entity.Product
 		rGetProductErr    error
 		rUpdateProductErr error
@@ -69,6 +72,12 @@ func TestBulkReduceQtyProduct(t *testing.T) {
 			name:    "deadline context",
 			ctx:     fixture.CtxEnded(),
 			wantErr: true,
+		},
+		{
+			name:         "failed to start transaction",
+			ctx:          context.Background(),
+			rStartTrxErr: response.ErrNoSQLTransactionFound,
+			wantErr:      true,
 		},
 		{
 			name:           "product is not found",
@@ -100,6 +109,14 @@ func TestBulkReduceQtyProduct(t *testing.T) {
 			wantErr:           true,
 		},
 		{
+			name:           "failed to commit transaction",
+			ctx:            context.Background(),
+			payload:        &entity.BulkReduceQtyProductPayload{Items: []entity.BulkReduceQtyProductItemPayload{{SKU: "SKU-123", ReqQty: 1}}},
+			rGetProductRes: &entity.Product{Qty: 10},
+			rCommitTrxErr:  response.ErrNoSQLTransactionFound,
+			wantErr:        true,
+		},
+		{
 			name:           "success",
 			ctx:            context.Background(),
 			rGetProductRes: &entity.Product{Qty: 10},
@@ -112,9 +129,14 @@ func TestBulkReduceQtyProduct(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			productRepo := &testmock.ProductRepositoryInterface{}
 			productRepo.On("GetProductBySKU", mock.Anything, mock.Anything).Return(tc.rGetProductRes, tc.rGetProductErr)
-			productRepo.On("UpdateProduct", mock.Anything, mock.Anything).Return(tc.rUpdateProductErr)
+			productRepo.On("UpdateProduct", mock.Anything, mock.Anything, mock.Anything).Return(tc.rUpdateProductErr)
 
-			uc := usecase.NewProductUsecase(productRepo)
+			dbTransactionRepo := &testmock.PostgresTransactionRepositoryInterface{}
+			dbTransactionRepo.On("StartTransactionQuery", mock.Anything).Return(&sqlx.Tx{}, tc.rStartTrxErr)
+			dbTransactionRepo.On("CommitTransactionQuery", mock.Anything, mock.Anything).Return(tc.rCommitTrxErr)
+			dbTransactionRepo.On("RollbackTransactionQuery", mock.Anything, mock.Anything).Return(nil)
+
+			uc := usecase.NewProductUsecase(productRepo, dbTransactionRepo)
 			_, err := uc.BulkReduceQtyProduct(tc.ctx, tc.payload)
 			assert.Equal(t, tc.wantErr, err != nil)
 		})
@@ -159,7 +181,7 @@ func TestGetProductByID(t *testing.T) {
 			productRepo := &testmock.ProductRepositoryInterface{}
 			productRepo.On("GetProductByID", mock.Anything, mock.Anything).Return(tc.rProductRes, tc.rProductErr)
 
-			uc := usecase.NewProductUsecase(productRepo)
+			uc := usecase.NewProductUsecase(productRepo, &testmock.PostgresTransactionRepositoryInterface{})
 			_, err := uc.GetProductByID(tc.ctx, 123)
 			assert.Equal(t, tc.wantErr, err != nil)
 		})
@@ -208,7 +230,7 @@ func TestGetProducts(t *testing.T) {
 			productRepo.On("GetProducts", mock.Anything, mock.Anything).Return(tc.rGetProductsRes, tc.rGetProductsErr)
 			productRepo.On("GetProductsCount", mock.Anything, mock.Anything).Return(tc.rGetProductsCountRes, tc.rGetProductsCountErr)
 
-			uc := usecase.NewProductUsecase(productRepo)
+			uc := usecase.NewProductUsecase(productRepo, &testmock.PostgresTransactionRepositoryInterface{})
 			_, _, err := uc.GetProducts(tc.ctx, tc.data)
 			assert.Equal(t, tc.wantErr, err != nil)
 		})
@@ -266,9 +288,9 @@ func TestUpdateProduct(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			productRepo := &testmock.ProductRepositoryInterface{}
 			productRepo.On("GetProductByID", mock.Anything, mock.Anything).Return(tc.rGetProductRes, tc.rGetProductErr)
-			productRepo.On("UpdateProduct", mock.Anything, mock.Anything).Return(tc.rProductErr)
+			productRepo.On("UpdateProduct", mock.Anything, mock.Anything, mock.Anything).Return(tc.rProductErr)
 
-			uc := usecase.NewProductUsecase(productRepo)
+			uc := usecase.NewProductUsecase(productRepo, &testmock.PostgresTransactionRepositoryInterface{})
 			_, err := uc.UpdateProduct(tc.ctx, tc.productID, tc.data)
 			assert.Equal(t, tc.wantErr, err != nil)
 		})

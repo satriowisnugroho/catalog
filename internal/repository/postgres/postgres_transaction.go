@@ -35,7 +35,7 @@ func (r *PostgresTransactionRepository) StartTransactionQuery(ctx context.Contex
 }
 
 // CommitTransactionQuery commit transaction instance
-func (t *PostgresTransactionRepository) CommitTransactionQuery(ctx context.Context, tx *sqlx.Tx) error {
+func (r *PostgresTransactionRepository) CommitTransactionQuery(ctx context.Context, tx *sqlx.Tx) error {
 	functionName := "PostgresTransactionRepository.CommitTransactionQuery"
 	if tx == nil {
 		return response.ErrNoSQLTransactionFound
@@ -46,7 +46,7 @@ func (t *PostgresTransactionRepository) CommitTransactionQuery(ctx context.Conte
 }
 
 // RollbackTransactionQuery rollback transaction instance
-func (t *PostgresTransactionRepository) RollbackTransactionQuery(ctx context.Context, tx *sqlx.Tx) error {
+func (r *PostgresTransactionRepository) RollbackTransactionQuery(ctx context.Context, tx *sqlx.Tx) error {
 	functionName := "PostgresTransactionRepository.RollbackTransactionQuery"
 	if tx == nil {
 		return response.ErrNoSQLTransactionFound
