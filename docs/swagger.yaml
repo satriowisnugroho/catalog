@@ -91,6 +91,34 @@ paths:
         in: query
         name: keyword
         type: string
+      - description: sku product
+        in: query
+        name: sku
+        type: string
+      - description: category product
+        in: query
+        name: category
+        type: string
+      - description: condition product
+        in: query
+        name: condition
+        type: integer
+      - description: tenant product
+        in: query
+        name: tenant
+        type: string
+      - description: order by
+        in: query
+        name: orderby
+        type: string
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:

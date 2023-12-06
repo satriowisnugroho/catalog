@@ -112,6 +112,13 @@ func (h *ProductHandler) GetProductByID(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       keyword query string false "title search by keyword"
+// @Param       sku query string false "sku product"
+// @Param       category query string false "category product"
+// @Param       condition query integer false "condition product"
+// @Param       tenant query string false "tenant product"
+// @Param       orderby query string false "order by"
+// @Param       offset query integer false "offset"
+// @Param       limit query integer false "limit"
 // @Success     200 {object} response.SuccessBody{data=[]entity.Product,meta=response.MetaInfo}
 // @Failure     404 {object} response.ErrorBody
 // @Failure     500 {object} response.ErrorBody
