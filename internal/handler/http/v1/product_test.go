@@ -44,8 +44,8 @@ func TestCreateProduct(t *testing.T) {
 		},
 		{
 			name:              "success",
-			pProductRes:       &entity.ProductPayload{Tenant: types.TenantLoremType},
-			uProductRes:       &entity.Product{Tenant: types.TenantLoremType},
+			pProductRes:       &entity.ProductPayload{Condition: types.ConditionNewType, Tenant: types.TenantLoremType},
+			uProductRes:       &entity.Product{Condition: types.ConditionNewType, Tenant: types.TenantLoremType},
 			httpStatusCodeRes: http.StatusOK,
 		},
 	}
@@ -104,7 +104,7 @@ func TestBulkReduceQtyProduct(t *testing.T) {
 		{
 			name:              "success",
 			pProductRes:       &entity.BulkReduceQtyProductPayload{},
-			uProductRes:       []*entity.Product{{Tenant: types.TenantLoremType}},
+			uProductRes:       []*entity.Product{{Condition: types.ConditionNewType, Tenant: types.TenantLoremType}},
 			httpStatusCodeRes: http.StatusOK,
 		},
 	}
@@ -174,7 +174,7 @@ func TestGetProductByID(t *testing.T) {
 			pp := &testmock.ProductParserInterface{}
 
 			productUsecase := &testmock.ProductUsecaseInterface{}
-			productUsecase.On("GetProductByID", mock.Anything, mock.Anything, mock.Anything).Return(&entity.Product{Tenant: types.TenantLoremType}, tc.uProductErr)
+			productUsecase.On("GetProductByID", mock.Anything, mock.Anything, mock.Anything).Return(&entity.Product{Condition: types.ConditionNewType, Tenant: types.TenantLoremType}, tc.uProductErr)
 
 			h := &httpv1.ProductHandler{l, pp, productUsecase}
 			h.GetProductByID(ctx)
@@ -214,7 +214,7 @@ func TestGetProducts(t *testing.T) {
 			pp := &testmock.ProductParserInterface{}
 
 			productUsecase := &testmock.ProductUsecaseInterface{}
-			productUsecase.On("GetProducts", mock.Anything, mock.Anything).Return([]*entity.Product{{Tenant: types.TenantLoremType}}, 10, tc.uProductErr)
+			productUsecase.On("GetProducts", mock.Anything, mock.Anything).Return([]*entity.Product{{Condition: types.ConditionNewType, Tenant: types.TenantLoremType}}, 10, tc.uProductErr)
 
 			h := &httpv1.ProductHandler{l, pp, productUsecase}
 			h.GetProducts(ctx)
@@ -252,8 +252,8 @@ func TestUpdateProduct(t *testing.T) {
 		},
 		{
 			name:              "success",
-			pProductRes:       &entity.ProductPayload{Tenant: types.TenantLoremType},
-			uProductRes:       &entity.Product{Tenant: types.TenantLoremType},
+			pProductRes:       &entity.ProductPayload{Condition: types.ConditionNewType, Tenant: types.TenantLoremType},
+			uProductRes:       &entity.Product{Condition: types.ConditionNewType, Tenant: types.TenantLoremType},
 			httpStatusCodeRes: http.StatusOK,
 		},
 	}

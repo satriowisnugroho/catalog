@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"github.com/satriowisnugroho/catalog/internal/entity"
+	"github.com/satriowisnugroho/catalog/internal/entity/types"
 	"github.com/satriowisnugroho/catalog/internal/helper"
 	"github.com/satriowisnugroho/catalog/internal/parser"
 	"github.com/satriowisnugroho/catalog/internal/response"
@@ -157,7 +158,7 @@ func (h *ProductHandler) GetProductByID(c *gin.Context) {
 // @Param       keyword 		query		string 		false "title search by keyword"
 // @Param       sku 				query 	string 		false "sku product"
 // @Param       category 		query 	string 		false "category product"
-// @Param       condition		query 	integer		false "condition product"
+// @Param       condition		query 	string		false "condition product"					example(new, preloved)
 // @Param       orderby 		query 	string 		false "order by"
 // @Param       offset 			query 	integer 	false "offset"
 // @Param       limit 			query 	integer 	false "limit"
@@ -166,14 +167,14 @@ func (h *ProductHandler) GetProductByID(c *gin.Context) {
 // @Failure     500 {object} response.ErrorBody
 // @Router      /products [get]
 func (h *ProductHandler) GetProducts(c *gin.Context) {
-	condition, _ := strconv.Atoi(c.Query("condition"))
+	// TODO: Move to parser
 	offset, _ := strconv.Atoi(c.Query("offset"))
 	limit, _ := strconv.Atoi(c.Query("limit"))
 	payload := &entity.GetProductPayload{
 		SKU:          c.Query("sku"),
 		TitleKeyword: c.Query("keyword"),
 		Category:     c.Query("category"),
-		Condition:    int8(condition),
+		Condition:    types.ConditionTypeNameToValue[c.Query("condition")],
 		Tenant:       helper.GetTenant(c),
 		OrderBy:      c.Query("orderby"),
 		Offset:       offset,

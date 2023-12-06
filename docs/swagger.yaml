@@ -42,7 +42,7 @@ definitions:
       category:
         type: string
       condition:
-        type: integer
+        type: string
       price:
         type: integer
       qty:
@@ -119,9 +119,10 @@ paths:
         name: category
         type: string
       - description: condition product
+        example: new, preloved
         in: query
         name: condition
-        type: integer
+        type: string
       - description: order by
         in: query
         name: orderby

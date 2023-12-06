@@ -9,16 +9,16 @@ import (
 
 // Product struct holds entity of product
 type Product struct {
-	ID        int              `json:"id"`
-	SKU       string           `json:"sku"`
-	Title     string           `json:"title"`
-	Category  string           `json:"category"`
-	Condition int8             `json:"condition"`
-	Tenant    types.TenantType `json:"tenant"`
-	Qty       int              `json:"qty"`
-	Price     int              `json:"price"`
-	CreatedAt time.Time        `json:"created_at"`
-	UpdatedAt time.Time        `json:"updated_at"`
+	ID        int                 `json:"id"`
+	SKU       string              `json:"sku"`
+	Title     string              `json:"title"`
+	Category  string              `json:"category"`
+	Condition types.ConditionType `json:"condition"`
+	Tenant    types.TenantType    `json:"tenant"`
+	Qty       int                 `json:"qty"`
+	Price     int                 `json:"price"`
+	CreatedAt time.Time           `json:"created_at"`
+	UpdatedAt time.Time           `json:"updated_at"`
 }
 
 // GetProductPayload holds get product payload representative
@@ -26,7 +26,7 @@ type GetProductPayload struct {
 	SKU          string
 	TitleKeyword string
 	Category     string
-	Condition    int8
+	Condition    types.ConditionType
 	Tenant       types.TenantType
 	OrderBy      string
 	Offset       int
@@ -45,22 +45,25 @@ type BulkReduceQtyProductItemPayload struct {
 }
 
 // SwaggerProductPayload holds product payload for swagger docs
+// Do not remove this struct
+// Everytime you update the ProductPayload
+// you must adjust this struct for swagger docs
 type SwaggerProductPayload struct {
 	Title     string `json:"title"`
 	Category  string `json:"category"`
-	Condition int8   `json:"condition"`
+	Condition string `json:"condition"`
 	Qty       int    `json:"qty"`
 	Price     int    `json:"price"`
 }
 
 // ProductPayload holds product payload representative
 type ProductPayload struct {
-	Title     string           `json:"title"`
-	Category  string           `json:"category"`
-	Condition int8             `json:"condition"`
-	Tenant    types.TenantType `json:"-"`
-	Qty       int              `json:"qty"`
-	Price     int              `json:"price"`
+	Title     string              `json:"title"`
+	Category  string              `json:"category"`
+	Condition types.ConditionType `json:"condition"`
+	Tenant    types.TenantType    `json:"-"`
+	Qty       int                 `json:"qty"`
+	Price     int                 `json:"price"`
 }
 
 // ToEntity to convert product payload to entity contract

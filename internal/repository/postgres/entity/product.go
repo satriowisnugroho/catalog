@@ -9,16 +9,16 @@ import (
 
 // Product struct holds attachment database representative
 type Product struct {
-	ID        int              `db:"id"`
-	SKU       string           `db:"sku"`
-	Title     string           `db:"title"`
-	Category  string           `db:"category"`
-	Condition int8             `db:"condition"`
-	Tenant    types.TenantType `db:"tenant"`
-	Qty       int              `db:"qty"`
-	Price     int              `db:"price"`
-	CreatedAt time.Time        `db:"created_at"`
-	UpdatedAt time.Time        `db:"updated_at"`
+	ID        int                 `db:"id"`
+	SKU       string              `db:"sku"`
+	Title     string              `db:"title"`
+	Category  string              `db:"category"`
+	Condition types.ConditionType `db:"condition"`
+	Tenant    types.TenantType    `db:"tenant"`
+	Qty       int                 `db:"qty"`
+	Price     int                 `db:"price"`
+	CreatedAt time.Time           `db:"created_at"`
+	UpdatedAt time.Time           `db:"updated_at"`
 }
 
 // ToEntity to convert product from database to entity contract

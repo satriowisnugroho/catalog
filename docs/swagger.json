@@ -52,7 +52,8 @@
                         "in": "query"
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "example": "new, preloved",
                         "description": "condition product",
                         "name": "condition",
                         "in": "query"
@@ -485,7 +486,7 @@
                     "type": "string"
                 },
                 "condition": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "price": {
                     "type": "integer"

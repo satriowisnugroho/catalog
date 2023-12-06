@@ -10,6 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"github.com/satriowisnugroho/catalog/internal/entity"
+	"github.com/satriowisnugroho/catalog/internal/entity/types"
 	"github.com/satriowisnugroho/catalog/internal/helper"
 	dbentity "github.com/satriowisnugroho/catalog/internal/repository/postgres/entity"
 	"github.com/satriowisnugroho/catalog/internal/response"
@@ -267,7 +268,7 @@ func (r *ProductRepository) constructSearchQuery(payload *entity.GetProductPaylo
 		paramIndex++
 	}
 
-	if payload.Condition != 0 {
+	if payload.Condition != types.ConditionEmptyType {
 		wheres = append(wheres, fmt.Sprintf("condition = $%v", paramIndex))
 		params = append(params, strconv.FormatInt(int64(payload.Condition), 10))
 		paramIndex++

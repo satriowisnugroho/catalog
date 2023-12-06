@@ -59,7 +59,8 @@ const docTemplate_swagger = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "example": "new, preloved",
                         "description": "condition product",
                         "name": "condition",
                         "in": "query"
@@ -492,7 +493,7 @@ const docTemplate_swagger = `{
                     "type": "string"
                 },
                 "condition": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "price": {
                     "type": "integer"

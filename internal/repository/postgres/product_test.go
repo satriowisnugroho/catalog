@@ -106,7 +106,7 @@ func TestGetProductByID(t *testing.T) {
 			name:      "success",
 			ctx:       context.Background(),
 			fetchRows: postgres.ProductColumns,
-			expected:  &entity.Product{Tenant: types.TenantLoremType},
+			expected:  &entity.Product{Condition: types.ConditionNewType, Tenant: types.TenantLoremType},
 			wantErr:   false,
 		},
 	}
@@ -190,7 +190,7 @@ func TestGetProductBySKU(t *testing.T) {
 			name:      "success",
 			ctx:       context.Background(),
 			fetchRows: postgres.ProductColumns,
-			expected:  &entity.Product{Tenant: types.TenantLoremType},
+			expected:  &entity.Product{Condition: types.ConditionNewType, Tenant: types.TenantLoremType},
 			wantErr:   false,
 		},
 	}
@@ -272,7 +272,7 @@ func TestGetProducts(t *testing.T) {
 			ctx:       context.Background(),
 			payload:   &entity.GetProductPayload{Limit: 99999},
 			fetchRows: postgres.ProductColumns,
-			expected:  []*entity.Product{{Tenant: types.TenantLoremType}},
+			expected:  []*entity.Product{{Condition: types.ConditionNewType, Tenant: types.TenantLoremType}},
 			wantErr:   false,
 		},
 		{
@@ -282,14 +282,14 @@ func TestGetProducts(t *testing.T) {
 				SKU:          "SKU123",
 				TitleKeyword: "Product",
 				Category:     "foo",
-				Condition:    1,
+				Condition:    types.ConditionNewType,
 				Tenant:       types.TenantLoremType,
 				OrderBy:      "created_at DESC",
 				Offset:       0,
 				Limit:        10,
 			},
 			fetchRows: postgres.ProductColumns,
-			expected:  []*entity.Product{{Tenant: types.TenantLoremType}},
+			expected:  []*entity.Product{{Condition: types.ConditionNewType, Tenant: types.TenantLoremType}},
 			wantErr:   false,
 		},
 	}
