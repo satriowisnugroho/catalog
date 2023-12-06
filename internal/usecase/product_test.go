@@ -55,6 +55,72 @@ func TestCreateProduct(t *testing.T) {
 	}
 }
 
+func TestBulkReduceQtyProduct(t *testing.T) {
+	testcases := []struct {
+		name              string
+		ctx               context.Context
+		payload           *entity.BulkReduceQtyProductPayload
+		rGetProductRes    *entity.Product
+		rGetProductErr    error
+		rUpdateProductErr error
+		wantErr           bool
+	}{
+		{
+			name:    "deadline context",
+			ctx:     fixture.CtxEnded(),
+			wantErr: true,
+		},
+		{
+			name:           "product is not found",
+			ctx:            context.Background(),
+			payload:        &entity.BulkReduceQtyProductPayload{Items: []entity.BulkReduceQtyProductItemPayload{{SKU: "SKU-123", ReqQty: 1}}},
+			rGetProductErr: response.ErrNotFound,
+			wantErr:        true,
+		},
+		{
+			name:           "failed to get product",
+			ctx:            context.Background(),
+			payload:        &entity.BulkReduceQtyProductPayload{Items: []entity.BulkReduceQtyProductItemPayload{{SKU: "SKU-123", ReqQty: 1}}},
+			rGetProductErr: errors.New("error get product"),
+			wantErr:        true,
+		},
+		{
+			name:           "insufficient stock",
+			ctx:            context.Background(),
+			payload:        &entity.BulkReduceQtyProductPayload{Items: []entity.BulkReduceQtyProductItemPayload{{SKU: "SKU-123", ReqQty: 11}}},
+			rGetProductRes: &entity.Product{Qty: 10},
+			wantErr:        true,
+		},
+		{
+			name:              "failed to update product",
+			ctx:               context.Background(),
+			payload:           &entity.BulkReduceQtyProductPayload{Items: []entity.BulkReduceQtyProductItemPayload{{SKU: "SKU-123", ReqQty: 1}}},
+			rGetProductRes:    &entity.Product{Qty: 10},
+			rUpdateProductErr: errors.New("error update product"),
+			wantErr:           true,
+		},
+		{
+			name:           "success",
+			ctx:            context.Background(),
+			rGetProductRes: &entity.Product{Qty: 10},
+			payload:        &entity.BulkReduceQtyProductPayload{Items: []entity.BulkReduceQtyProductItemPayload{{SKU: "SKU-123", ReqQty: 1}}},
+			wantErr:        false,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			productRepo := &testmock.ProductRepositoryInterface{}
+			productRepo.On("GetProductBySKU", mock.Anything, mock.Anything).Return(tc.rGetProductRes, tc.rGetProductErr)
+			productRepo.On("UpdateProduct", mock.Anything, mock.Anything).Return(tc.rUpdateProductErr)
+
+			uc := usecase.NewProductUsecase(productRepo)
+			_, err := uc.BulkReduceQtyProduct(tc.ctx, tc.payload)
+			assert.Equal(t, tc.wantErr, err != nil)
+		})
+	}
+}
+
 func TestGetProductByID(t *testing.T) {
 	testcases := []struct {
 		name        string

@@ -98,6 +98,8 @@ type MetaInfo struct {
 const (
 	// ErrorCodeNotFound Error code for path not found
 	ErrorCodeNotFound = 10000
+	// ErrorCodeInsufficientQty Error code for insufficient quantity
+	ErrorCodeInsufficientQty = 10001
 
 	// ErrorCodeUnexpectedError Error code for unexpected error
 	ErrorCodeUnexpectedError = 9999
@@ -114,6 +116,12 @@ var (
 	ErrNotFound = CustomError{
 		Message:  "Record not found",
 		Code:     ErrorCodeNotFound,
+		HTTPCode: http.StatusNotFound,
+	}
+	// ErrInsufficientStock define error when insufficient quantity
+	ErrInsufficientStock = CustomError{
+		Message:  "Insufficient quantity",
+		Code:     ErrorCodeInsufficientQty,
 		HTTPCode: http.StatusNotFound,
 	}
 )

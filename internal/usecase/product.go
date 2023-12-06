@@ -46,7 +46,7 @@ func (uc *ProductUsecase) CreateProduct(ctx context.Context, payload *entity.Pro
 }
 
 func (uc *ProductUsecase) BulkReduceQtyProduct(ctx context.Context, payload *entity.BulkReduceQtyProductPayload) ([]*entity.Product, error) {
-	functionName := "ProductUsecase.GetProductByID"
+	functionName := "ProductUsecase.BulkReduceQtyProduct"
 
 	if err := helper.CheckDeadline(ctx); err != nil {
 		return nil, errors.Wrap(err, functionName)
@@ -54,21 +54,20 @@ func (uc *ProductUsecase) BulkReduceQtyProduct(ctx context.Context, payload *ent
 
 	products := make([]*entity.Product, 0)
 	for _, item := range payload.Items {
-		// TODO: Create repo to get product by SKU
-		product, err := uc.repo.GetProductByID(ctx, 1)
+		product, err := uc.repo.GetProductBySKU(ctx, item.SKU)
 		if err != nil {
 			if err == response.ErrNotFound {
 				return nil, err
 			}
 
-			return nil, errors.Wrap(fmt.Errorf("uc.repo.GetProductByID: %w", err), functionName)
+			return nil, errors.Wrap(fmt.Errorf("uc.repo.GetProductBySKU: %w", err), functionName)
 		}
 
 		// TODO: Check tenant, if it doesn't belong to product, return 403 forbiden
 
 		product.Qty = product.Qty - item.ReqQty
 		if product.Qty < 0 {
-			// TODO: Return insufficient stock error
+			return nil, response.ErrInsufficientStock
 		}
 
 		if err := uc.repo.UpdateProduct(ctx, product); err != nil {
