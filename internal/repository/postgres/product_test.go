@@ -6,7 +6,9 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	"github.com/pkg/errors"
+	"github.com/satriowisnugroho/catalog/internal/config"
 	"github.com/satriowisnugroho/catalog/internal/entity"
 	"github.com/satriowisnugroho/catalog/internal/entity/types"
 	"github.com/satriowisnugroho/catalog/internal/repository/postgres"
@@ -26,6 +28,13 @@ func TestCreateProduct(t *testing.T) {
 			name:    "deadline context",
 			ctx:     fixture.CtxEnded(),
 			wantErr: true,
+		},
+		{
+			name:      "duplicate sku & tenant",
+			ctx:       context.Background(),
+			input:     &entity.Product{},
+			createErr: &pq.Error{Code: pq.ErrorCode(config.UniqueConstraintViolationCode), Constraint: config.SKUTenantUniqueConstraint},
+			wantErr:   true,
 		},
 		{
 			name:      "fail exec query",

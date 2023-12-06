@@ -8,7 +8,9 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	"github.com/pkg/errors"
+	"github.com/satriowisnugroho/catalog/internal/config"
 	"github.com/satriowisnugroho/catalog/internal/entity"
 	"github.com/satriowisnugroho/catalog/internal/entity/types"
 	"github.com/satriowisnugroho/catalog/internal/helper"
@@ -90,7 +92,6 @@ func (r *ProductRepository) CreateProduct(ctx context.Context, product *entity.P
 
 	query := fmt.Sprintf(`INSERT INTO %s (%s) VALUES (%s) RETURNING id`, ProductTableName, ProductCreationAttributes, EnumeratedBindvars(ProductCreationColumns))
 
-	// TODO: Get unique error (sku, tenant)
 	err := r.db.QueryRowContext(ctx, query,
 		product.SKU,
 		product.Title,
@@ -103,6 +104,11 @@ func (r *ProductRepository) CreateProduct(ctx context.Context, product *entity.P
 		product.UpdatedAt,
 	).Scan(&product.ID)
 	if err != nil {
+		if postgresError, ok := err.(*pq.Error); ok {
+			if postgresError.Code == pq.ErrorCode(config.UniqueConstraintViolationCode) && postgresError.Constraint == config.SKUTenantUniqueConstraint {
+				return response.ErrDuplicateSKUTenant
+			}
+		}
 		return errors.Wrap(err, functionName)
 	}
 

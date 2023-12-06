@@ -36,6 +36,13 @@ func TestCreateProduct(t *testing.T) {
 			wantErr: true,
 		},
 		{
+			name:        "duplicate sku & tenant",
+			ctx:         context.Background(),
+			payload:     &entity.ProductPayload{Category: types.CategoryBookType, Condition: types.ConditionNewType, Tenant: types.TenantLoremType},
+			rProductErr: response.ErrDuplicateSKUTenant,
+			wantErr:     true,
+		},
+		{
 			name:        "failed to create product",
 			ctx:         context.Background(),
 			payload:     &entity.ProductPayload{Category: types.CategoryBookType, Condition: types.ConditionNewType, Tenant: types.TenantLoremType},

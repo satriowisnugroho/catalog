@@ -46,6 +46,9 @@ func (uc *ProductUsecase) CreateProduct(ctx context.Context, payload *entity.Pro
 
 	product := payload.ToEntity()
 	if err := uc.repo.CreateProduct(ctx, product); err != nil {
+		if customErr, ok := err.(response.CustomError); ok {
+			return nil, customErr
+		}
 		return nil, errors.Wrap(fmt.Errorf("uc.repo.CreateProduct: %w", err), functionName)
 	}
 

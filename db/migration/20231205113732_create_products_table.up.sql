@@ -17,3 +17,4 @@ CREATE INDEX ON "products" ("category");
 CREATE INDEX ON "products" ("condition");
 CREATE INDEX ON "products" ("tenant");
 CREATE INDEX ON "products" ("created_at");
+CREATE UNIQUE INDEX ON "products" ("sku", "tenant");

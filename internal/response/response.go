@@ -87,14 +87,6 @@ type MetaInfo struct {
 	Total      int `json:"total,omitempty"`
 }
 
-// // PaginationMetaInfo is used to define meta info for pagination meta
-// type PaginationMetaInfo struct {
-// 	HTTPStatus uint `json:"http_status"`
-// 	Offset     int  `json:"offset"`
-// 	Limit      int  `json:"limit"`
-// 	Total      int  `json:"total"`
-// }
-
 const (
 	// ErrorCodeNotFound Error code for path not found
 	ErrorCodeNotFound = 10000
@@ -110,6 +102,8 @@ const (
 	ErrorCodeInvalidTenant = 10005
 	// ErrorCodeInvalidEnum Error code for invalid enum
 	ErrorCodeInvalidEnum = 10006
+	// ErrorCodeDuplicateSKUTenant Error code for duplicate sku & tenant
+	ErrorCodeDuplicateSKUTenant = 10006
 
 	// ErrorCodeNoSQLTransactionFound Error code for no sql transaction found
 	ErrorCodeNoSQLTransactionFound = 9000
@@ -158,6 +152,12 @@ var (
 	ErrInvalidTenant = CustomError{
 		Message:  "Invalid tenant",
 		Code:     ErrorCodeInvalidTenant,
+		HTTPCode: http.StatusUnprocessableEntity,
+	}
+	// ErrDuplicateSKUTenant define error when sku & tenant is duplicate
+	ErrDuplicateSKUTenant = CustomError{
+		Message:  "Duplicate SKU and Tenant",
+		Code:     ErrorCodeDuplicateSKUTenant,
 		HTTPCode: http.StatusUnprocessableEntity,
 	}
 
