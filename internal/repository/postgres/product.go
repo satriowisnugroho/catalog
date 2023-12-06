@@ -91,6 +91,7 @@ func (r *ProductRepository) CreateProduct(ctx context.Context, product *entity.P
 	query := fmt.Sprintf(`INSERT INTO %s (%s) VALUES (%s) RETURNING id`, ProductTableName, ProductCreationAttributes, EnumeratedBindvars(ProductCreationColumns))
 	log.Print(query)
 
+	// TODO: Get unique error (sku, tenant)
 	err := r.db.QueryRowContext(ctx, query,
 		product.SKU,
 		product.Title,
@@ -234,7 +235,6 @@ func (r *ProductRepository) constructSearchQuery(payload *entity.GetProductPaylo
 		paramIndex++
 	}
 
-	// TODO: downcase
 	if len(payload.TitleKeyword) >= 3 {
 		wheres = append(wheres, fmt.Sprintf("title ILIKE $%v", paramIndex))
 		params = append(params, fmt.Sprintf("%%%s%%", payload.TitleKeyword))

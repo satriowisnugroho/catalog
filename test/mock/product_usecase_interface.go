@@ -14,13 +14,36 @@ type ProductUsecaseInterface struct {
 	mock.Mock
 }
 
-// CreateProduct provides a mock function with given fields: ctx, productPayload
-func (_m *ProductUsecaseInterface) CreateProduct(ctx context.Context, productPayload *entity.ProductPayload) (*entity.Product, error) {
-	ret := _m.Called(ctx, productPayload)
+// BulkReduceQtyProduct provides a mock function with given fields: ctx, payload
+func (_m *ProductUsecaseInterface) BulkReduceQtyProduct(ctx context.Context, payload *entity.BulkReduceQtyProductPayload) ([]*entity.Product, error) {
+	ret := _m.Called(ctx, payload)
+
+	var r0 []*entity.Product
+	if rf, ok := ret.Get(0).(func(context.Context, *entity.BulkReduceQtyProductPayload) []*entity.Product); ok {
+		r0 = rf(ctx, payload)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*entity.Product)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, *entity.BulkReduceQtyProductPayload) error); ok {
+		r1 = rf(ctx, payload)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CreateProduct provides a mock function with given fields: ctx, payload
+func (_m *ProductUsecaseInterface) CreateProduct(ctx context.Context, payload *entity.ProductPayload) (*entity.Product, error) {
+	ret := _m.Called(ctx, payload)
 
 	var r0 *entity.Product
 	if rf, ok := ret.Get(0).(func(context.Context, *entity.ProductPayload) *entity.Product); ok {
-		r0 = rf(ctx, productPayload)
+		r0 = rf(ctx, payload)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*entity.Product)
@@ -29,7 +52,7 @@ func (_m *ProductUsecaseInterface) CreateProduct(ctx context.Context, productPay
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, *entity.ProductPayload) error); ok {
-		r1 = rf(ctx, productPayload)
+		r1 = rf(ctx, payload)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -90,13 +113,13 @@ func (_m *ProductUsecaseInterface) GetProducts(ctx context.Context, payload *ent
 	return r0, r1, r2
 }
 
-// UpdateProduct provides a mock function with given fields: ctx, productID, productPayload
-func (_m *ProductUsecaseInterface) UpdateProduct(ctx context.Context, productID int, productPayload *entity.ProductPayload) (*entity.Product, error) {
-	ret := _m.Called(ctx, productID, productPayload)
+// UpdateProduct provides a mock function with given fields: ctx, productID, payload
+func (_m *ProductUsecaseInterface) UpdateProduct(ctx context.Context, productID int, payload *entity.ProductPayload) (*entity.Product, error) {
+	ret := _m.Called(ctx, productID, payload)
 
 	var r0 *entity.Product
 	if rf, ok := ret.Get(0).(func(context.Context, int, *entity.ProductPayload) *entity.Product); ok {
-		r0 = rf(ctx, productID, productPayload)
+		r0 = rf(ctx, productID, payload)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*entity.Product)
@@ -105,7 +128,7 @@ func (_m *ProductUsecaseInterface) UpdateProduct(ctx context.Context, productID 
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, int, *entity.ProductPayload) error); ok {
-		r1 = rf(ctx, productID, productPayload)
+		r1 = rf(ctx, productID, payload)
 	} else {
 		r1 = ret.Error(1)
 	}

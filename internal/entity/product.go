@@ -32,6 +32,17 @@ type GetProductPayload struct {
 	Limit        int
 }
 
+// BulkReduceQtyProductPayload holds bulk reduce qty product payload representative
+type BulkReduceQtyProductPayload struct {
+	Items []BulkReduceQtyProductItemPayload `json:"items"`
+}
+
+// BulkReduceQtyProductItemPayload holds bulk reduce qty product item payload representative
+type BulkReduceQtyProductItemPayload struct {
+	SKU    string `json:"sku"`
+	ReqQty int    `json:"req_qty"`
+}
+
 // ProductPayload holds product payload representative
 type ProductPayload struct {
 	Title     string           `json:"title"`

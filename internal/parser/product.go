@@ -12,6 +12,7 @@ import (
 // ProductParserInterface holds interface that parse data for product
 type ProductParserInterface interface {
 	ParseProductPayload(body io.Reader) (*entity.ProductPayload, error)
+	ParseBulkReduceQtyProductPayload(body io.Reader) (*entity.BulkReduceQtyProductPayload, error)
 }
 
 // ProductParser struct for product parser initialization
@@ -22,12 +23,12 @@ func NewProductParser() *ProductParser {
 	return &ProductParser{}
 }
 
-// ParserProductPayload parse request product
+// ParseProductPayload parse request product
 func (p *ProductParser) ParseProductPayload(body io.Reader) (*entity.ProductPayload, error) {
-	functionName := "ProductParser.ParserProductPayload"
+	functionName := "ProductParser.ParseProductPayload"
 
-	var productPayload entity.ProductPayload
-	if err := json.NewDecoder(body).Decode(&productPayload); err != nil {
+	var payload entity.ProductPayload
+	if err := json.NewDecoder(body).Decode(&payload); err != nil {
 		switch err.(type) {
 		case response.CustomError:
 			return nil, err
@@ -36,5 +37,22 @@ func (p *ProductParser) ParseProductPayload(body io.Reader) (*entity.ProductPayl
 		return nil, errors.Wrap(err, functionName)
 	}
 
-	return &productPayload, nil
+	return &payload, nil
+}
+
+// ParseBulkReduceQtyProductPayload parse request bulk reduce qty product
+func (p *ProductParser) ParseBulkReduceQtyProductPayload(body io.Reader) (*entity.BulkReduceQtyProductPayload, error) {
+	functionName := "ProductParser.ParseBulkReduceQtyProductPayload"
+
+	var payload entity.BulkReduceQtyProductPayload
+	if err := json.NewDecoder(body).Decode(&payload); err != nil {
+		switch err.(type) {
+		case response.CustomError:
+			return nil, err
+		}
+
+		return nil, errors.Wrap(err, functionName)
+	}
+
+	return &payload, nil
 }
