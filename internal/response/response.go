@@ -98,9 +98,11 @@ type MetaInfo struct {
 const (
 	// ErrorCodeNotFound Error code for path not found
 	ErrorCodeNotFound = 10000
-	// ErrorCodeInsufficientQty Error code for insufficient quantity
-	ErrorCodeInsufficientQty = 10001
+	// ErrorCodeInsufficientStock Error code for insufficient quantity
+	ErrorCodeInsufficientStock = 10001
 
+	// ErrorCodeNoSQLTransactionFound Error code for no sql transaction found
+	ErrorCodeNoSQLTransactionFound = 9000
 	// ErrorCodeUnexpectedError Error code for unexpected error
 	ErrorCodeUnexpectedError = 9999
 )
@@ -121,8 +123,15 @@ var (
 	// ErrInsufficientStock define error when insufficient quantity
 	ErrInsufficientStock = CustomError{
 		Message:  "Insufficient quantity",
-		Code:     ErrorCodeInsufficientQty,
+		Code:     ErrorCodeInsufficientStock,
 		HTTPCode: http.StatusNotFound,
+	}
+
+	// ErrNoSQLTransactionFound defines no sql transaction when do the db transaction
+	ErrNoSQLTransactionFound = CustomError{
+		Message:  "No SQL transaction found",
+		Code:     ErrorCodeNoSQLTransactionFound,
+		HTTPCode: http.StatusInternalServerError,
 	}
 )
 
