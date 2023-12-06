@@ -12,7 +12,7 @@ type Product struct {
 	ID        int                 `db:"id"`
 	SKU       string              `db:"sku"`
 	Title     string              `db:"title"`
-	Category  string              `db:"category"`
+	Category  types.CategoryType  `db:"category"`
 	Condition types.ConditionType `db:"condition"`
 	Tenant    types.TenantType    `db:"tenant"`
 	Qty       int                 `db:"qty"`

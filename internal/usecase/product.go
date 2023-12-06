@@ -157,6 +157,10 @@ func (uc *ProductUsecase) UpdateProduct(ctx context.Context, productID int, payl
 		return nil, errors.Wrap(err, functionName)
 	}
 
+	if err := payload.Validate(); err != nil {
+		return nil, err
+	}
+
 	product, err := uc.repo.GetProductByID(ctx, productID)
 	if err != nil {
 		if err == response.ErrNotFound {

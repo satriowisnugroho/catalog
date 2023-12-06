@@ -2,7 +2,7 @@ CREATE TABLE "products" (
   "id" SERIAL PRIMARY KEY,
   "sku" varchar NOT NULL,
   "title" varchar NOT NULL,
-  "category" varchar NOT NULL,
+  "category" smallint NOT NULL,
   "condition" smallint NOT NULL,
   "tenant" smallint NOT NULL,
   "qty" integer NOT NULL,

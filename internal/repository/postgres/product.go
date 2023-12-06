@@ -262,9 +262,9 @@ func (r *ProductRepository) constructSearchQuery(payload *entity.GetProductPaylo
 		paramIndex++
 	}
 
-	if len(payload.Category) > 0 {
+	if payload.Category != types.CategoryEmptyType {
 		wheres = append(wheres, fmt.Sprintf("category = $%v", paramIndex))
-		params = append(params, payload.Category)
+		params = append(params, strconv.FormatInt(int64(payload.Category), 10))
 		paramIndex++
 	}
 

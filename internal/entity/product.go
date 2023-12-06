@@ -12,7 +12,7 @@ type Product struct {
 	ID        int                 `json:"id"`
 	SKU       string              `json:"sku"`
 	Title     string              `json:"title"`
-	Category  string              `json:"category"`
+	Category  types.CategoryType  `json:"category"`
 	Condition types.ConditionType `json:"condition"`
 	Tenant    types.TenantType    `json:"tenant"`
 	Qty       int                 `json:"qty"`
@@ -25,7 +25,7 @@ type Product struct {
 type GetProductPayload struct {
 	SKU          string
 	TitleKeyword string
-	Category     string
+	Category     types.CategoryType
 	Condition    types.ConditionType
 	Tenant       types.TenantType
 	OrderBy      string
@@ -59,7 +59,7 @@ type SwaggerProductPayload struct {
 // ProductPayload holds product payload representative
 type ProductPayload struct {
 	Title     string              `json:"title"`
-	Category  string              `json:"category"`
+	Category  types.CategoryType  `json:"category"`
 	Condition types.ConditionType `json:"condition"`
 	Tenant    types.TenantType    `json:"-"`
 	Qty       int                 `json:"qty"`
@@ -80,6 +80,14 @@ func (p *ProductPayload) ToEntity() *Product {
 
 // Validate is func to validate payload
 func (p *ProductPayload) Validate() error {
+	if p.Category == types.CategoryEmptyType {
+		return response.ErrInvalidCategory
+	}
+
+	if p.Condition == types.ConditionEmptyType {
+		return response.ErrInvalidCondition
+	}
+
 	if p.Tenant == types.TenantEmptyType {
 		return response.ErrInvalidTenant
 	}

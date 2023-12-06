@@ -19,6 +19,7 @@ func errInvalid(errType string, enumType string, value string) response.CustomEr
 	return response.CustomError{
 		Message:  fmt.Sprintf("%s is invalid %s for %s", value, errType, enumType),
 		Field:    enumType,
+		Code:     response.ErrorCodeInvalidEnum,
 		HTTPCode: http.StatusUnprocessableEntity,
 	}
 }

@@ -102,8 +102,14 @@ const (
 	ErrorCodeInsufficientStock = 10001
 	// ErrorCodeForbidden Error code for forbidden
 	ErrorCodeForbidden = 10002
+	// ErrorCodeInvalidCategory Error code for invalid category
+	ErrorCodeInvalidCategory = 10003
+	// ErrorCodeInvalidCondition Error code for invalid condition
+	ErrorCodeInvalidCondition = 10004
 	// ErrorCodeInvalidTenant Error code for invalid tenant
-	ErrorCodeInvalidTenant = 10003
+	ErrorCodeInvalidTenant = 10005
+	// ErrorCodeInvalidEnum Error code for invalid enum
+	ErrorCodeInvalidEnum = 10006
 
 	// ErrorCodeNoSQLTransactionFound Error code for no sql transaction found
 	ErrorCodeNoSQLTransactionFound = 9000
@@ -135,6 +141,18 @@ var (
 		Message:  "Forbidden",
 		Code:     ErrorCodeForbidden,
 		HTTPCode: http.StatusForbidden,
+	}
+	// ErrInvalidCategory define error when invalid category
+	ErrInvalidCategory = CustomError{
+		Message:  "Invalid category",
+		Code:     ErrorCodeInvalidCategory,
+		HTTPCode: http.StatusUnprocessableEntity,
+	}
+	// ErrInvalidCondition define error when invalid condition
+	ErrInvalidCondition = CustomError{
+		Message:  "Invalid condition",
+		Code:     ErrorCodeInvalidCondition,
+		HTTPCode: http.StatusUnprocessableEntity,
 	}
 	// ErrInvalidTenant define error when invalid tenant
 	ErrInvalidTenant = CustomError{

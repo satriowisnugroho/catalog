@@ -57,6 +57,12 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 
 	payload, err := h.ProductParser.ParseProductPayload(c.Request.Body)
 	if err != nil {
+		switch err.(type) {
+		case response.CustomError:
+			response.Error(c, err)
+			return
+		}
+
 		err = errors.Wrap(fmt.Errorf("h.productParser.ParseProductPayload: %w", err), functionName)
 		h.Logger.Error(err)
 		response.Error(c, err)
@@ -173,7 +179,7 @@ func (h *ProductHandler) GetProducts(c *gin.Context) {
 	payload := &entity.GetProductPayload{
 		SKU:          c.Query("sku"),
 		TitleKeyword: c.Query("keyword"),
-		Category:     c.Query("category"),
+		Category:     types.CategoryTypeNameToValue[c.Query("category")],
 		Condition:    types.ConditionTypeNameToValue[c.Query("condition")],
 		Tenant:       helper.GetTenant(c),
 		OrderBy:      c.Query("orderby"),
@@ -210,6 +216,12 @@ func (h *ProductHandler) UpdateProduct(c *gin.Context) {
 
 	payload, err := h.ProductParser.ParseProductPayload(c.Request.Body)
 	if err != nil {
+		switch err.(type) {
+		case response.CustomError:
+			response.Error(c, err)
+			return
+		}
+
 		err = errors.Wrap(fmt.Errorf("h.productParser.ParseProductPayload: %w", err), functionName)
 		h.Logger.Error(err)
 		response.Error(c, err)

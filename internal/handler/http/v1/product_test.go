@@ -26,6 +26,11 @@ func TestCreateProduct(t *testing.T) {
 		httpStatusCodeRes int
 	}{
 		{
+			name:              "parser return custom error",
+			pProductErr:       response.ErrInvalidCategory,
+			httpStatusCodeRes: http.StatusUnprocessableEntity,
+		},
+		{
 			name:              "failed to parse product payload",
 			pProductErr:       errors.New("error parse product payload"),
 			httpStatusCodeRes: http.StatusInternalServerError,
@@ -44,8 +49,8 @@ func TestCreateProduct(t *testing.T) {
 		},
 		{
 			name:              "success",
-			pProductRes:       &entity.ProductPayload{Condition: types.ConditionNewType, Tenant: types.TenantLoremType},
-			uProductRes:       &entity.Product{Condition: types.ConditionNewType, Tenant: types.TenantLoremType},
+			pProductRes:       &entity.ProductPayload{Category: types.CategoryBookType, Condition: types.ConditionNewType, Tenant: types.TenantLoremType},
+			uProductRes:       &entity.Product{Category: types.CategoryBookType, Condition: types.ConditionNewType, Tenant: types.TenantLoremType},
 			httpStatusCodeRes: http.StatusOK,
 		},
 	}
@@ -104,7 +109,7 @@ func TestBulkReduceQtyProduct(t *testing.T) {
 		{
 			name:              "success",
 			pProductRes:       &entity.BulkReduceQtyProductPayload{},
-			uProductRes:       []*entity.Product{{Condition: types.ConditionNewType, Tenant: types.TenantLoremType}},
+			uProductRes:       []*entity.Product{{Category: types.CategoryBookType, Condition: types.ConditionNewType, Tenant: types.TenantLoremType}},
 			httpStatusCodeRes: http.StatusOK,
 		},
 	}
@@ -174,7 +179,7 @@ func TestGetProductByID(t *testing.T) {
 			pp := &testmock.ProductParserInterface{}
 
 			productUsecase := &testmock.ProductUsecaseInterface{}
-			productUsecase.On("GetProductByID", mock.Anything, mock.Anything, mock.Anything).Return(&entity.Product{Condition: types.ConditionNewType, Tenant: types.TenantLoremType}, tc.uProductErr)
+			productUsecase.On("GetProductByID", mock.Anything, mock.Anything, mock.Anything).Return(&entity.Product{Category: types.CategoryBookType, Condition: types.ConditionNewType, Tenant: types.TenantLoremType}, tc.uProductErr)
 
 			h := &httpv1.ProductHandler{l, pp, productUsecase}
 			h.GetProductByID(ctx)
@@ -214,7 +219,7 @@ func TestGetProducts(t *testing.T) {
 			pp := &testmock.ProductParserInterface{}
 
 			productUsecase := &testmock.ProductUsecaseInterface{}
-			productUsecase.On("GetProducts", mock.Anything, mock.Anything).Return([]*entity.Product{{Condition: types.ConditionNewType, Tenant: types.TenantLoremType}}, 10, tc.uProductErr)
+			productUsecase.On("GetProducts", mock.Anything, mock.Anything).Return([]*entity.Product{{Category: types.CategoryBookType, Condition: types.ConditionNewType, Tenant: types.TenantLoremType}}, 10, tc.uProductErr)
 
 			h := &httpv1.ProductHandler{l, pp, productUsecase}
 			h.GetProducts(ctx)
@@ -234,6 +239,11 @@ func TestUpdateProduct(t *testing.T) {
 		httpStatusCodeRes int
 	}{
 		{
+			name:              "parser return custom error",
+			pProductErr:       response.ErrInvalidCategory,
+			httpStatusCodeRes: http.StatusUnprocessableEntity,
+		},
+		{
 			name:              "failed to parse product payload",
 			pProductErr:       errors.New("error parse product payload"),
 			httpStatusCodeRes: http.StatusInternalServerError,
@@ -252,8 +262,8 @@ func TestUpdateProduct(t *testing.T) {
 		},
 		{
 			name:              "success",
-			pProductRes:       &entity.ProductPayload{Condition: types.ConditionNewType, Tenant: types.TenantLoremType},
-			uProductRes:       &entity.Product{Condition: types.ConditionNewType, Tenant: types.TenantLoremType},
+			pProductRes:       &entity.ProductPayload{Category: types.CategoryBookType, Condition: types.ConditionNewType, Tenant: types.TenantLoremType},
+			uProductRes:       &entity.Product{Category: types.CategoryBookType, Condition: types.ConditionNewType, Tenant: types.TenantLoremType},
 			httpStatusCodeRes: http.StatusOK,
 		},
 	}
