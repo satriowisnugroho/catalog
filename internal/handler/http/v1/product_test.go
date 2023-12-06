@@ -123,6 +123,46 @@ func TestGetProductByID(t *testing.T) {
 	}
 }
 
+func TestGetProducts(t *testing.T) {
+	testcases := []struct {
+		name              string
+		uProductErr       error
+		httpStatusCodeRes int
+	}{
+		{
+			name:              "failed to get products",
+			uProductErr:       errors.New("error get products"),
+			httpStatusCodeRes: http.StatusInternalServerError,
+		},
+		{
+			name:              "success",
+			httpStatusCodeRes: http.StatusOK,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+
+			ctx.Request, _ = http.NewRequest("GET", "/products?", nil)
+
+			l := &testmock.LoggerInterface{}
+			l.On("Error", mock.Anything, mock.Anything)
+
+			pp := &testmock.ProductParserInterface{}
+
+			productUsecase := &testmock.ProductUsecaseInterface{}
+			productUsecase.On("GetProducts", mock.Anything, mock.Anything).Return([]*entity.Product{{Tenant: types.TenantLoremType}}, 10, tc.uProductErr)
+
+			h := &httpv1.ProductHandler{l, pp, productUsecase}
+			h.GetProducts(ctx)
+
+			assert.Equal(t, tc.httpStatusCodeRes, w.Code)
+		})
+	}
+}
+
 func TestUpdateProduct(t *testing.T) {
 	testcases := []struct {
 		name              string

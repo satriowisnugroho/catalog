@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	_TenantTypeNameToValue = map[string]TenantType{
+	TenantTypeNameToValue = map[string]TenantType{
 		"lorem": TenantLoremType,
 		"ipsum": TenantIpsumType,
 	}
@@ -30,7 +30,7 @@ var (
 // Scan is used for Scan
 func (t *TenantType) Scan(value interface{}) error {
 	val := TenantType(value.(int64))
-	if val == 0 || val > 1 {
+	if val == 0 || int(value.(int64)) > len(TenantTypeNameToValue) {
 		return errInvalidEnum("tenant_type", fmt.Sprint(value.(int64)))
 	}
 
@@ -53,7 +53,7 @@ func (r *TenantType) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return fmt.Errorf("TenantType should be a string, got %s", data)
 	}
-	v, ok := _TenantTypeNameToValue[s]
+	v, ok := TenantTypeNameToValue[s]
 	if !ok {
 		return errInvalidValue("tenant_type", s)
 	}

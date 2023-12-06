@@ -81,8 +81,19 @@ func (e ErrorResponse) Error() string {
 
 // MetaInfo holds meta data
 type MetaInfo struct {
-	HTTPStatus int `json:"http_status"`
+	HTTPStatus int `json:"http_status,omitempty"`
+	Offset     int `json:"offset,omitempty"`
+	Limit      int `json:"limit,omitempty"`
+	Total      int `json:"total,omitempty"`
 }
+
+// // PaginationMetaInfo is used to define meta info for pagination meta
+// type PaginationMetaInfo struct {
+// 	HTTPStatus uint `json:"http_status"`
+// 	Offset     int  `json:"offset"`
+// 	Limit      int  `json:"limit"`
+// 	Total      int  `json:"total"`
+// }
 
 const (
 	// ErrorCodeNotFound Error code for path not found
@@ -119,6 +130,17 @@ func BuildSuccess(data interface{}, message string, meta interface{}) SuccessBod
 // OK wrap success response
 func OK(c *gin.Context, data interface{}, message string) {
 	successResponse := BuildSuccess(data, message, MetaInfo{HTTPStatus: http.StatusOK})
+	c.JSON(http.StatusOK, successResponse)
+}
+
+// OKWithPagination wrap success response with pagination meta
+func OKWithPagination(c *gin.Context, data interface{}, message string, total, offset, limit int) {
+	successResponse := BuildSuccess(data, message, MetaInfo{
+		HTTPStatus: http.StatusOK,
+		Total:      total,
+		Offset:     offset,
+		Limit:      limit,
+	})
 	c.JSON(http.StatusOK, successResponse)
 }
 
