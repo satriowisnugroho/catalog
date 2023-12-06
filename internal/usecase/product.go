@@ -52,6 +52,7 @@ func (uc *ProductUsecase) BulkReduceQtyProduct(ctx context.Context, payload *ent
 		return nil, errors.Wrap(err, functionName)
 	}
 
+	// TODO: Use transaction
 	products := make([]*entity.Product, 0)
 	for _, item := range payload.Items {
 		product, err := uc.repo.GetProductBySKU(ctx, item.SKU)

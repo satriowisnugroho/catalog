@@ -186,6 +186,74 @@ const docTemplate_swagger = `{
                 }
             }
         },
+        "/products/bulk-reduce-qty": {
+            "post": {
+                "description": "An API to bulk reduce quantity product",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product"
+                ],
+                "summary": "Bulk Reduce Quantity Product",
+                "operationId": "bulk-reduce-qty",
+                "parameters": [
+                    {
+                        "description": "Bulk Reduce Qty Product Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.BulkReduceQtyProductPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessBody"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/entity.Product"
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/response.MetaInfo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
         "/products/{id}": {
             "get": {
                 "description": "An API to show product detail",
@@ -321,6 +389,28 @@ const docTemplate_swagger = `{
         }
     },
     "definitions": {
+        "entity.BulkReduceQtyProductItemPayload": {
+            "type": "object",
+            "properties": {
+                "req_qty": {
+                    "type": "integer"
+                },
+                "sku": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.BulkReduceQtyProductPayload": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.BulkReduceQtyProductItemPayload"
+                    }
+                }
+            }
+        },
         "entity.Product": {
             "type": "object",
             "properties": {

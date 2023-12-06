@@ -12,9 +12,6 @@ import (
 	"github.com/satriowisnugroho/catalog/internal/response"
 	"github.com/satriowisnugroho/catalog/internal/usecase"
 	"github.com/satriowisnugroho/catalog/pkg/logger"
-
-	// Import entity for swagger docs
-	_ "github.com/satriowisnugroho/catalog/internal/entity"
 )
 
 type ProductHandler struct {
@@ -34,6 +31,7 @@ func newProductHandler(
 	h := handler.Group("/products")
 	{
 		h.POST("/", r.CreateProduct)
+		h.POST("/bulk-reduce-qty", r.BulkReduceQtyProduct)
 		h.GET("/:id", r.GetProductByID)
 		h.GET("/", r.GetProducts)
 		h.PUT("/:id", r.UpdateProduct)
@@ -79,6 +77,40 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 	}
 
 	response.OK(c, product, "")
+}
+
+// @Summary     Bulk Reduce Quantity Product
+// @Description An API to bulk reduce quantity product
+// @ID          bulk-reduce-qty
+// @Tags  	    product
+// @Accept      json
+// @Produce     json
+// @Param       request body entity.BulkReduceQtyProductPayload true "Bulk Reduce Qty Product Payload"
+// @Success     200 {object} response.SuccessBody{data=entity.Product,meta=response.MetaInfo}
+// @Failure     404 {object} response.ErrorBody
+// @Failure     422 {object} response.ErrorBody
+// @Failure     500 {object} response.ErrorBody
+// @Router      /products/bulk-reduce-qty [post]
+func (h *ProductHandler) BulkReduceQtyProduct(c *gin.Context) {
+	functionName := "ProductHandler.BulkReduceQtyProduct"
+
+	payload, err := h.ProductParser.ParseBulkReduceQtyProductPayload(c.Request.Body)
+	if err != nil {
+		err = errors.Wrap(fmt.Errorf("h.productParser.ParseBulkReduceQtyProductPayload: %w", err), functionName)
+		h.Logger.Error(err)
+		response.Error(c, err)
+		return
+	}
+
+	if _, err = h.ProductUsecase.BulkReduceQtyProduct(c.Request.Context(), payload); err != nil {
+		err = errors.Wrap(fmt.Errorf("h.ProductUsecase.BulkReduceQtyProduct: %w", err), functionName)
+		h.Logger.Error(err)
+		response.Error(c, err)
+
+		return
+	}
+
+	response.OK(c, nil, "Successfully bulk reduce quantity")
 }
 
 // @Summary     Show Product Detail

@@ -75,6 +75,60 @@ func TestCreateProduct(t *testing.T) {
 	}
 }
 
+func TestBulkReduceQtyProduct(t *testing.T) {
+	testcases := []struct {
+		name              string
+		pProductRes       *entity.BulkReduceQtyProductPayload
+		pProductErr       error
+		uProductRes       []*entity.Product
+		uProductErr       error
+		httpStatusCodeRes int
+	}{
+		{
+			name:              "failed to parse payload",
+			pProductErr:       errors.New("error parse payload"),
+			httpStatusCodeRes: http.StatusInternalServerError,
+		},
+		{
+			name:              "failed to bulk reduce qty product",
+			uProductErr:       errors.New("error bulk reduce qty product"),
+			httpStatusCodeRes: http.StatusInternalServerError,
+		},
+		{
+			name:              "success",
+			pProductRes:       &entity.BulkReduceQtyProductPayload{},
+			uProductRes:       []*entity.Product{{Tenant: types.TenantLoremType}},
+			httpStatusCodeRes: http.StatusOK,
+		},
+	}
+
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+
+			ctx.Request = &http.Request{
+				Header: make(http.Header),
+				Method: "POST",
+			}
+
+			l := &testmock.LoggerInterface{}
+			l.On("Error", mock.Anything, mock.Anything)
+
+			pp := &testmock.ProductParserInterface{}
+			pp.On("ParseBulkReduceQtyProductPayload", mock.Anything).Return(tc.pProductRes, tc.pProductErr)
+
+			productUsecase := &testmock.ProductUsecaseInterface{}
+			productUsecase.On("BulkReduceQtyProduct", mock.Anything, mock.Anything).Return(tc.uProductRes, tc.uProductErr)
+
+			h := &httpv1.ProductHandler{l, pp, productUsecase}
+			h.BulkReduceQtyProduct(ctx)
+
+			assert.Equal(t, tc.httpStatusCodeRes, w.Code)
+		})
+	}
+}
+
 func TestGetProductByID(t *testing.T) {
 	testcases := []struct {
 		name              string

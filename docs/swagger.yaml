@@ -1,5 +1,19 @@
 basePath: /v1
 definitions:
+  entity.BulkReduceQtyProductItemPayload:
+    properties:
+      req_qty:
+        type: integer
+      sku:
+        type: string
+    type: object
+  entity.BulkReduceQtyProductPayload:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/entity.BulkReduceQtyProductItemPayload'
+        type: array
+    type: object
   entity.Product:
     properties:
       category:
@@ -268,6 +282,48 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorBody'
       summary: Update Product
+      tags:
+      - product
+  /products/bulk-reduce-qty:
+    post:
+      consumes:
+      - application/json
+      description: An API to bulk reduce quantity product
+      operationId: bulk-reduce-qty
+      parameters:
+      - description: Bulk Reduce Qty Product Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entity.BulkReduceQtyProductPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessBody'
+            - properties:
+                data:
+                  $ref: '#/definitions/entity.Product'
+                meta:
+                  $ref: '#/definitions/response.MetaInfo'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      summary: Bulk Reduce Quantity Product
       tags:
       - product
 swagger: "2.0"
