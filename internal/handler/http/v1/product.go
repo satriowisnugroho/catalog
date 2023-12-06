@@ -6,8 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"github.com/satriowisnugroho/catalog/internal/entity"
-	"github.com/satriowisnugroho/catalog/internal/entity/types"
 	"github.com/satriowisnugroho/catalog/internal/helper"
 	"github.com/satriowisnugroho/catalog/internal/parser"
 	"github.com/satriowisnugroho/catalog/internal/response"
@@ -173,19 +171,7 @@ func (h *ProductHandler) GetProductByID(c *gin.Context) {
 // @Failure     500 {object} response.ErrorBody
 // @Router      /products [get]
 func (h *ProductHandler) GetProducts(c *gin.Context) {
-	// TODO: Move to parser
-	offset, _ := strconv.Atoi(c.Query("offset"))
-	limit, _ := strconv.Atoi(c.Query("limit"))
-	payload := &entity.GetProductPayload{
-		SKU:          c.Query("sku"),
-		TitleKeyword: c.Query("keyword"),
-		Category:     types.CategoryTypeNameToValue[c.Query("category")],
-		Condition:    types.ConditionTypeNameToValue[c.Query("condition")],
-		Tenant:       helper.GetTenant(c),
-		OrderBy:      c.Query("orderby"),
-		Offset:       offset,
-		Limit:        limit,
-	}
+	payload := h.ProductParser.ParseGetProductPayload(c)
 	products, total, err := h.ProductUsecase.GetProducts(c.Request.Context(), payload)
 	if err != nil {
 		h.Logger.Error(err, "http - v1 - GetProducts")

@@ -217,6 +217,7 @@ func TestGetProducts(t *testing.T) {
 			l.On("Error", mock.Anything, mock.Anything)
 
 			pp := &testmock.ProductParserInterface{}
+			pp.On("ParseGetProductPayload", mock.Anything).Return(&entity.GetProductPayload{})
 
 			productUsecase := &testmock.ProductUsecaseInterface{}
 			productUsecase.On("GetProducts", mock.Anything, mock.Anything).Return([]*entity.Product{{Category: types.CategoryBookType, Condition: types.ConditionNewType, Tenant: types.TenantLoremType}}, 10, tc.uProductErr)

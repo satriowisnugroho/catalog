@@ -3,9 +3,10 @@
 package mocks
 
 import (
-	io "io"
-
+	gin "github.com/gin-gonic/gin"
 	entity "github.com/satriowisnugroho/catalog/internal/entity"
+
+	io "io"
 
 	mock "github.com/stretchr/testify/mock"
 )
@@ -36,6 +37,22 @@ func (_m *ProductParserInterface) ParseBulkReduceQtyProductPayload(body io.Reade
 	}
 
 	return r0, r1
+}
+
+// ParseGetProductPayload provides a mock function with given fields: c
+func (_m *ProductParserInterface) ParseGetProductPayload(c *gin.Context) *entity.GetProductPayload {
+	ret := _m.Called(c)
+
+	var r0 *entity.GetProductPayload
+	if rf, ok := ret.Get(0).(func(*gin.Context) *entity.GetProductPayload); ok {
+		r0 = rf(c)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*entity.GetProductPayload)
+		}
+	}
+
+	return r0
 }
 
 // ParseProductPayload provides a mock function with given fields: body
