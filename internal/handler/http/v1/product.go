@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"github.com/satriowisnugroho/catalog/internal/entity"
-	"github.com/satriowisnugroho/catalog/internal/entity/types"
+	"github.com/satriowisnugroho/catalog/internal/helper"
 	"github.com/satriowisnugroho/catalog/internal/parser"
 	"github.com/satriowisnugroho/catalog/internal/response"
 	"github.com/satriowisnugroho/catalog/internal/usecase"
@@ -153,7 +153,6 @@ func (h *ProductHandler) GetProductByID(c *gin.Context) {
 // @Param       sku query string false "sku product"
 // @Param       category query string false "category product"
 // @Param       condition query integer false "condition product"
-// @Param       tenant query string false "tenant product"
 // @Param       orderby query string false "order by"
 // @Param       offset query integer false "offset"
 // @Param       limit query integer false "limit"
@@ -170,11 +169,10 @@ func (h *ProductHandler) GetProducts(c *gin.Context) {
 		TitleKeyword: c.Query("keyword"),
 		Category:     c.Query("category"),
 		Condition:    int8(condition),
-		// TODO: Adjust tenant payload
-		Tenant:  types.TenantTypeNameToValue[c.Query("tenant")],
-		OrderBy: c.Query("orderby"),
-		Offset:  offset,
-		Limit:   limit,
+		Tenant:       helper.GetTenant(c),
+		OrderBy:      c.Query("orderby"),
+		Offset:       offset,
+		Limit:        limit,
 	}
 	products, total, err := h.ProductUsecase.GetProducts(c.Request.Context(), payload)
 	if err != nil {

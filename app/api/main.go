@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/satriowisnugroho/catalog/internal/config"
+	"github.com/satriowisnugroho/catalog/internal/handler/http/middleware"
 	httpv1 "github.com/satriowisnugroho/catalog/internal/handler/http/v1"
 	"github.com/satriowisnugroho/catalog/internal/parser"
 	"github.com/satriowisnugroho/catalog/internal/repository/postgres"
@@ -42,6 +43,11 @@ func main() {
 
 	// HTTP Server
 	handler := gin.New()
+
+	// Set middleware
+	handler.Use(middleware.Tenant())
+
+	// Set router
 	httpv1.NewRouter(handler, l, productParser, productUsecase)
 	httpServer := httpserver.New(handler, httpserver.Port(fmt.Sprint(cfg.Port)))
 

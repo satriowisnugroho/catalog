@@ -57,12 +57,6 @@ const docTemplate_swagger = `{
                     },
                     {
                         "type": "string",
-                        "description": "tenant product",
-                        "name": "tenant",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
                         "description": "order by",
                         "name": "orderby",
                         "in": "query"

@@ -10,7 +10,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"github.com/satriowisnugroho/catalog/internal/entity"
-	"github.com/satriowisnugroho/catalog/internal/entity/types"
 	"github.com/satriowisnugroho/catalog/internal/helper"
 	dbentity "github.com/satriowisnugroho/catalog/internal/repository/postgres/entity"
 	"github.com/satriowisnugroho/catalog/internal/response"
@@ -274,11 +273,9 @@ func (r *ProductRepository) constructSearchQuery(payload *entity.GetProductPaylo
 		paramIndex++
 	}
 
-	if payload.Tenant != types.TenantEmptyType {
-		wheres = append(wheres, fmt.Sprintf("tenant = $%v", paramIndex))
-		params = append(params, strconv.FormatInt(int64(payload.Tenant), 10))
-		paramIndex++
-	}
+	wheres = append(wheres, fmt.Sprintf("tenant = $%v", paramIndex))
+	params = append(params, strconv.FormatInt(int64(payload.Tenant), 10))
+	paramIndex++
 
 	if len(wheres) > 0 {
 		filterQuery = fmt.Sprintf("WHERE %s", strings.Join(wheres, " AND "))

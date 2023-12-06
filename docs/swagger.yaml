@@ -117,10 +117,6 @@ paths:
         in: query
         name: condition
         type: integer
-      - description: tenant product
-        in: query
-        name: tenant
-        type: string
       - description: order by
         in: query
         name: orderby
